@@ -4,48 +4,28 @@
 
     let { data }: { data: PageServerData } = $props();
 
-    const users = data.users;
-
-    let Application;
-    let Sprite;
-    let Texture;
-    let Text, TextStyle;
-
-    let app;
+    const rectangles = data.rectangles;
 
     onMount(async () => {
-        Application = await import("pixi.js").then((m) => m.Application);
-        Sprite = await import("pixi.js").then((m) => m.Sprite);
-        Texture = await import("pixi.js").then((m) => m.Texture);
-        Text = await import("pixi.js").then((m) => m.Text);
-        TextStyle = await import("pixi.js").then((m) => m.TextStyle);
+        const { Application, Sprite, Texture } = await import("pixi.js");
 
-        app = new Application();
+        const app = new Application();
         await app.init({
             width: window.innerWidth,
             height: window.innerHeight,
             resolution: 1,
-            backgroundColor: 0x10bb99,
+            backgroundColor: 0xaaaaaa,
         });
 
-        const sprite = new Sprite(Texture.WHITE);
-        sprite.tint = 0xff0000;
-        sprite.width = sprite.height = 100;
-        sprite.x = sprite.y = 100;
-
-        const text = new Text({
-            text: "PixiJS with SvelteKit!",
-            style: new TextStyle({
-                fontFamily: "Helvetica",
-                fill: "#222",
-                fontWeight: "600",
-                fontSize: 48,
-                stroke: { color: "#fff", width: 8, join: "round" },
-            }),
+        rectangles.forEach((rectangleData) => {
+            const rectangle = new Sprite(Texture.WHITE);
+            rectangle.tint = 0xcc5555;
+            rectangle.x = rectangleData.x;
+            rectangle.y = rectangleData.y;
+            rectangle.width = rectangleData.width;
+            rectangle.height = rectangleData.height;
+            app.stage.addChild(rectangle);
         });
-        text.position.set(150, 150);
-
-        app.stage.addChild(sprite, text);
 
         document.getElementById("content-div")?.appendChild(app.canvas);
     });
@@ -55,15 +35,7 @@
     <title>Home</title>
 </svelte:head>
 
-<!-- <div id="content-div" class="content"></div> -->
-{#if users.length > 0}
-    {#each users as user}
-        <div>
-            <span>Username</span>
-            <span>{user.username}</span>
-        </div>
-    {/each}
-{/if}
+<div id="content-div" class="content"></div>
 
 <style>
     .content {
