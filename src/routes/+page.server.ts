@@ -3,8 +3,8 @@ import type { Rectangle } from "$lib/types/rectangle"
 import prisma from '$lib/prisma';
 
 export const load: PageServerLoad = async () => {
-    const rectangles: Rectangle[] = await prisma.rectangle.findMany();
+    const nodes = await prisma.node.findMany();
     return {
-        rectangles,
+        nodes,
     };
 };

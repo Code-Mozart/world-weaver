@@ -1,10 +1,41 @@
 {
-    "rectangles": [
+    "nodes": [
         {
-            "x": 50,
-            "y": 50,
-            "width": 100,
-            "height": 100
+            "id": 0,
+            "x": 100,
+            "y": 100
+        },
+        {
+            "id": 1,
+            "x": 200,
+            "y": 100
+        },
+        {
+            "id": 2,
+            "x": 100,
+            "y": 200
+        }
+    ],
+    "polygons": [
+        {
+            "id": 0
+        }
+    ],
+    "nodesOnPolygons": [
+        {
+            "nodeId": 0,
+            "nextNodeId": 1,
+            "polygonId": 0
+        },
+        {
+            "nodeId": 1,
+            "nextNodeId": 2,
+            "polygonId": 0
+        },
+        {
+            "nodeId": 2,
+            "nextNodeId": 0,
+            "polygonId": 0
         }
     ]
 }

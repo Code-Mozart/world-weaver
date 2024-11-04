@@ -4,10 +4,12 @@
 
     let { data }: { data: PageServerData } = $props();
 
-    const rectangles = data.rectangles;
+    const nodes = data.nodes;
 
     onMount(async () => {
-        const { Application, Sprite, Texture } = await import("pixi.js");
+        const { Application, Sprite, Texture, Graphics } = await import(
+            "pixi.js"
+        );
 
         const app = new Application();
         await app.init({
@@ -17,15 +19,15 @@
             backgroundColor: 0xaaaaaa,
         });
 
-        rectangles.forEach((rectangleData) => {
-            const rectangle = new Sprite(Texture.WHITE);
-            rectangle.tint = 0xcc5555;
-            rectangle.x = rectangleData.x;
-            rectangle.y = rectangleData.y;
-            rectangle.width = rectangleData.width;
-            rectangle.height = rectangleData.height;
-            app.stage.addChild(rectangle);
+        const graphics = new Graphics();
+
+        nodes.forEach((node) => {
+            graphics.circle(node.x, node.y, 5);
+            graphics.fill(0xcc5555);
+            console.log(`drawing cirlce at ${node.x}, ${node.y}`);
         });
+
+        app.stage.addChild(graphics);
 
         document.getElementById("content-div")?.appendChild(app.canvas);
     });
