@@ -4,32 +4,69 @@
 
     let { data }: { data: PageServerData } = $props();
 
-    const nodes = data.nodes;
+    const nodesMap = data.nodesMap;
+    const polygons = data.polygons;
 
     onMount(async () => {
-        const { Application, Sprite, Texture, Graphics } = await import(
-            "pixi.js"
-        );
+        const { Application, Graphics } = await import("pixi.js");
+        const { Viewport } = await import("pixi-viewport");
 
         const app = new Application();
         await app.init({
             width: window.innerWidth,
             height: window.innerHeight,
             resolution: 1,
-            backgroundColor: 0xaaaaaa,
+            backgroundColor: 0xdddddd,
         });
+
+        const viewport = new Viewport({
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight,
+            worldWidth: 1000,
+            worldHeight: 1000,
+
+            events: app.renderer.events,
+        });
+        viewport.options.disableOnContextMenu = true;
+        app.stage.addChild(viewport);
+
+        viewport.drag({ mouseButtons: "right" }).pinch().wheel().decelerate();
+        viewport.moveCenter(0, 0);
 
         const graphics = new Graphics();
 
-        nodes.forEach((node) => {
+        nodesMap.forEach((node) => {
             graphics.circle(node.x, node.y, 5);
-            graphics.fill(0xcc5555);
-            console.log(`drawing cirlce at ${node.x}, ${node.y}`);
+            graphics.fill(0x111111);
         });
 
-        app.stage.addChild(graphics);
+        polygons.forEach((polygon) => {
+            graphics.setStrokeStyle({ width: 2, color: 0x111111 });
+            polygon.Nodes.forEach((polygonNode) => {
+                if (polygonNode.nextNodeId === null) {
+                    return;
+                }
 
-        document.getElementById("content-div")?.appendChild(app.canvas);
+                const node = nodesMap.get(polygonNode.nodeId);
+                const nextNode = nodesMap.get(polygonNode.nextNodeId);
+
+                if (node === undefined || nextNode === undefined) {
+                    return;
+                }
+
+                graphics.moveTo(node.x, node.y);
+                graphics.lineTo(nextNode.x, nextNode.y);
+                graphics.stroke();
+            });
+        });
+
+        viewport.addChild(graphics);
+
+        const contentDiv = document.getElementById("content-div");
+        if (contentDiv) {
+            contentDiv.oncontextmenu = (event) => event.preventDefault();
+            contentDiv.appendChild(app.canvas);
+        }
     });
 </script>
 

@@ -14,11 +14,24 @@
             "id": 2,
             "x": 100,
             "y": 200
+        },
+        {
+            "id": 3,
+            "x": -100,
+            "y": -100
+        },
+        {
+            "id": 4,
+            "x": -300,
+            "y": -100
         }
     ],
     "polygons": [
         {
             "id": 0
+        },
+        {
+            "id": 1
         }
     ],
     "nodesOnPolygons": [
@@ -36,6 +49,21 @@
             "nodeId": 2,
             "nextNodeId": 0,
             "polygonId": 0
+        },
+        {
+            "nodeId": 2,
+            "nextNodeId": 3,
+            "polygonId": 1
+        },
+        {
+            "nodeId": 3,
+            "nextNodeId": 4,
+            "polygonId": 1
+        },
+        {
+            "nodeId": 4,
+            "nextNodeId": 2,
+            "polygonId": 1
         }
     ]
 }
