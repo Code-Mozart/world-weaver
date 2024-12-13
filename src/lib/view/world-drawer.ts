@@ -4,18 +4,28 @@ import { Viewport } from "pixi-viewport";
 import { Application, Graphics } from "pixi.js";
 
 export class WorldDrawer {
-    protected viewport: Viewport;
+    protected _viewport: Viewport;
     protected graphics: Graphics;
     protected worldData: any;
     protected style: CSSStyleDeclaration;
 
+    protected onAfterDrawCallbacks: ((drawing: Drawing) => void)[] = [];
+
+    get viewport() {
+        return this._viewport;
+    }
+
+    set onafterdraw(callback: (drawing: Drawing) => void) {
+        this.onAfterDrawCallbacks.push(callback);
+    }
+
     constructor(application: Application, worldData: any, style: CSSStyleDeclaration) {
-        this.viewport = WorldDrawer.createViewport(application);
+        this._viewport = WorldDrawer.createViewport(application);
         this.worldData = worldData;
         this.style = style;
 
         this.graphics = new Graphics();
-        this.viewport.addChild(this.graphics);
+        this._viewport.addChild(this.graphics);
     }
 
     public draw() {
@@ -53,6 +63,10 @@ export class WorldDrawer {
 
                 drawing.addLine(node.x, node.y, nextNode.x, nextNode.y);
             });
+        });
+
+        this.onAfterDrawCallbacks.forEach((callback) => {
+            callback(drawing);
         });
     }
 

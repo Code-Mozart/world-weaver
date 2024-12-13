@@ -39,10 +39,10 @@ export class Drawing {
     /**
      * Adds a line to the drawing.
      *
-     * @param {number} x1 The x-coordinate of the first point.
-     * @param {number} y1 The y-coordinate of the first point.
-     * @param {number} x2 The x-coordinate of the second point.
-     * @param {number} y2 The y-coordinate of the second point.
+     * @param {number} x1 The x-coordinate of the first point in the world.
+     * @param {number} y1 The y-coordinate of the first point in the world.
+     * @param {number} x2 The x-coordinate of the second point in the world.
+     * @param {number} y2 The y-coordinate of the second point in the world.
      * @param {StrokeInput} strokeStyle (optional) The stroke style of the line. If omitted, the default stroke style is used.
      */
     public addLine(x1: number, y1: number, x2: number, y2: number, strokeStyle?: StrokeInput) {

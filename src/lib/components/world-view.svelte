@@ -6,6 +6,9 @@
     onMount(async () => {
         const { Application } = await import("pixi.js");
         const { WorldDrawer } = await import("$lib/view/world-drawer");
+        const { WorldController } = await import(
+            "$lib/controllers/world-controller"
+        );
 
         const app = new Application();
         await app.init({
@@ -27,9 +30,11 @@
                 data,
                 getComputedStyle(contentDiv),
             );
-            worldDrawer.draw();
+
+            const worldController = new WorldController(data, worldDrawer);
 
             app.ticker.add((ticker) => {
+                worldController.update(ticker);
                 worldDrawer.draw();
             });
         }
