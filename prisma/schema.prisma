@@ -9,6 +9,12 @@ datasource db {
 
 // ABSTRACT MODELS
 
+// Non-SQL Data Document Storage
+model Document {
+  id       Int    @id @default(autoincrement())
+  jsonData String
+}
+
 // Abstract node marking a position in the world
 model Node {
   id Int   @id @default(autoincrement())
@@ -61,6 +67,8 @@ model Coastline {
   // 1 Land
   // 2 Lava
   // 3 Void
+  //
+  // see src/lib/types/ground-type.ts
   groundType Int
 
   // Information
