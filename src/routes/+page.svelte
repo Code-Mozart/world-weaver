@@ -15,8 +15,10 @@
         await app.init({
             width: window.innerWidth,
             height: window.innerHeight,
-            resolution: 1,
             backgroundColor: 0xdddddd,
+            resolution: window.devicePixelRatio,
+            antialias: true,
+            autoDensity: true,
         });
 
         const viewport = new Viewport({
