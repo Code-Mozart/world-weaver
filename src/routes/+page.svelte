@@ -10,6 +10,7 @@
     onMount(async () => {
         const { Application, Graphics } = await import("pixi.js");
         const { Viewport } = await import("pixi-viewport");
+        const { Drawing } = await import("$lib/drawing/drawing");
 
         const app = new Application();
         await app.init({
@@ -36,14 +37,14 @@
         viewport.moveCenter(0, 0);
 
         const graphics = new Graphics();
+        const drawing = new Drawing(graphics);
 
         nodesMap.forEach((node) => {
-            graphics.circle(node.x, node.y, 5);
-            graphics.fill(0x111111);
+            drawing.addFilledCircle(node.x, node.y, 5, 0x111111);
         });
 
+        drawing.defaultStrokeStyle = { color: 0x111111, width: 2 };
         polygons.forEach((polygon) => {
-            graphics.setStrokeStyle({ width: 2, color: 0x111111 });
             polygon.Nodes.forEach((polygonNode) => {
                 if (polygonNode.nextNodeId === null) {
                     return;
@@ -56,9 +57,7 @@
                     return;
                 }
 
-                graphics.moveTo(node.x, node.y);
-                graphics.lineTo(nextNode.x, nextNode.y);
-                graphics.stroke();
+                drawing.addLine(node.x, node.y, nextNode.x, nextNode.y);
             });
         });
 
