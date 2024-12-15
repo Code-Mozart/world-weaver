@@ -1,7 +1,9 @@
 <script lang="ts">
+    import type { World } from "$lib/types/world";
     import { onMount } from "svelte";
+    import type { PageServerData } from "../../routes/$types";
 
-    let { data }: { data: any } = $props();
+    let { data }: { data: PageServerData } = $props();
 
     onMount(async () => {
         const { Application } = await import("pixi.js");

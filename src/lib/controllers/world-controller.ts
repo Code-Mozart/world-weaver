@@ -8,7 +8,9 @@ export class WorldController {
 
     protected mouse: {
         screen: { x: number; y: number },
-        world: { x: number; y: number }
+        world: { x: number; y: number },
+        leftClick: boolean,
+        rightClick: boolean
     };
 
     constructor(worldData: any, worldDrawer: WorldDrawer) {
@@ -19,7 +21,9 @@ export class WorldController {
 
         this.mouse = {
             screen: { x: 0, y: 0 },
-            world: { x: 0, y: 0 }
+            world: { x: 0, y: 0 },
+            leftClick: false,
+            rightClick: false
         };
     }
 
@@ -27,6 +31,22 @@ export class WorldController {
     }
 
     protected registerCallbacks() {
+        this.worldDrawer.viewport.onmousedown = (event) => {
+            if (event.button === 0) {
+                this.mouse.leftClick = true;
+            } else if (event.button === 2) {
+                this.mouse.rightClick = true;
+            }
+        }
+
+        this.worldDrawer.viewport.onmouseup = (event) => {
+            if (event.button === 0) {
+                this.mouse.leftClick = false;
+            } else if (event.button === 2) {
+                this.mouse.rightClick = false;
+            }
+        }
+
         this.worldDrawer.viewport.onmousemove = (event) => {
             this.mouse.screen.x = event.globalX;
             this.mouse.screen.y = event.globalY;
@@ -34,9 +54,11 @@ export class WorldController {
             this.mouse.world = this.worldDrawer.viewport.toWorld(event.globalX, event.globalY);
         }
 
-        this.worldDrawer.onafterdraw = (drawing) => {
-            const scale = this.worldDrawer.viewport.scale.x;
-            drawing.addFilledCircle(this.mouse.world.x, this.mouse.world.y, scale * 5, Colors.red);
+        this.worldDrawer.viewport.ontouchmove = (event) => {
+            this.mouse.screen.x = event.globalX;
+            this.mouse.screen.y = event.globalY;
+
+            this.mouse.world = this.worldDrawer.viewport.toWorld(event.globalX, event.globalY);
         }
     }
 }

@@ -1,5 +1,10 @@
-generator client {
-  provider = "prisma-client-js"
+generator kysely {
+  provider = "prisma-kysely"
+
+  // Optionally provide a destination directory for the generated file
+  // and a filename of your choice
+  output   = "../src/lib/types"
+  fileName = "database.ts"
 }
 
 datasource db {
@@ -11,8 +16,12 @@ datasource db {
 
 // Non-SQL Data Document Storage
 model Document {
-  id       Int    @id @default(autoincrement())
-  jsonData String
+  id        Int    @id @default(autoincrement())
+  worldCuid String
+  name      String @unique
+  jsonData  String
+
+  @@index(worldCuid)
 }
 
 // Abstract node marking a position in the world
@@ -60,8 +69,9 @@ model ExtraInformation {
 
 // A coastline marking the edge between ground types in the world
 model Coastline {
-  id        Int @id @default(autoincrement())
-  polygonId Int @unique
+  id        Int    @id @default(autoincrement())
+  worldCuid String
+  polygonId Int    @unique
 
   // 0 Water
   // 1 Land
@@ -75,23 +85,31 @@ model Coastline {
   name String?
 
   Shape Polygon @relation(fields: [polygonId], references: [id])
+
+  @@index(worldCuid)
 }
 
 // River Sections may only be connected at their ends
 model River {
-  id   Int    @id @default(autoincrement())
-  Path Path[]
+  id        Int    @id @default(autoincrement())
+  worldCuid String
+  Path      Path[]
 
   // Information
   name String?
+
+  @@index(worldCuid)
 }
 
 model Mountain {
-  id   Int    @id @default(autoincrement())
-  Path Path[]
+  id        Int    @id @default(autoincrement())
+  worldCuid String
+  Path      Path[]
 
   // Information
   name String?
+
+  @@index(worldCuid)
 }
 
 // MANY-TO-MANY-MODELS
