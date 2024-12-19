@@ -6,54 +6,54 @@ import { Viewport } from "pixi-viewport";
  * This class is responsible for drawing the world.
  */
 export class WorldDrawer {
-    protected _viewport: Viewport;
-    protected drawing: Drawing;
-    protected worldData: any;
-    protected style: CSSStyleDeclaration;
+  protected _viewport: Viewport;
+  protected drawing: Drawing;
+  protected worldData: any;
+  protected style: CSSStyleDeclaration;
 
-    get viewport() {
-        return this._viewport;
-    }
+  get viewport() {
+    return this._viewport;
+  }
 
-    constructor(viewport: Viewport, drawing: Drawing, worldData: any, style: CSSStyleDeclaration) {
-        this._viewport = viewport;
-        this.drawing = drawing;
-        this.worldData = worldData;
-        this.style = style;
-    }
+  constructor(viewport: Viewport, drawing: Drawing, worldData: any, style: CSSStyleDeclaration) {
+    this._viewport = viewport;
+    this.drawing = drawing;
+    this.worldData = worldData;
+    this.style = style;
+  }
 
-    public draw() {
-        const primaryColor = this.style.getPropertyValue("--primary-color");
+  public draw() {
+    const primaryColor = this.style.getPropertyValue("--primary-color");
 
-        const nodesMap: Map<number, { x: number; y: number }> = this.worldData.nodesMap;
-        const polygons: { Nodes: { nodeId: number; nextNodeId: number }[] }[] = this.worldData.polygons;
+    const nodesMap: Map<number, { x: number; y: number }> = this.worldData.nodesMap;
+    const polygons: { Nodes: { nodeId: number; nextNodeId: number }[] }[] = this.worldData.polygons;
 
-        this.drawing.addOutlinedRectangle(0, 0, 1000, 1000, {
-            pattern: [20, 20],
-            color: Colors.gray,
-            width: 5,
-        });
+    this.drawing.addOutlinedRectangle(0, 0, 1000, 1000, {
+      pattern: [20, 20],
+      color: Colors.gray,
+      width: 5,
+    });
 
-        nodesMap.forEach((node: { x: number; y: number }) => {
-            this.drawing.addFilledCircle(node.x, node.y, 5, primaryColor);
-        });
+    nodesMap.forEach((node: { x: number; y: number }) => {
+      this.drawing.addFilledCircle(node.x, node.y, 5, primaryColor);
+    });
 
-        this.drawing.defaultStrokeStyle = { color: primaryColor, width: 2 };
-        polygons.forEach((polygon: { Nodes: { nodeId: number; nextNodeId: number }[] }) => {
-            polygon.Nodes.forEach((polygonNode) => {
-                if (polygonNode.nextNodeId === null) {
-                    return;
-                }
+    this.drawing.defaultStrokeStyle = { color: primaryColor, width: 2 };
+    polygons.forEach((polygon: { Nodes: { nodeId: number; nextNodeId: number }[] }) => {
+      polygon.Nodes.forEach(polygonNode => {
+        if (polygonNode.nextNodeId === null) {
+          return;
+        }
 
-                const node = nodesMap.get(polygonNode.nodeId);
-                const nextNode = nodesMap.get(polygonNode.nextNodeId);
+        const node = nodesMap.get(polygonNode.nodeId);
+        const nextNode = nodesMap.get(polygonNode.nextNodeId);
 
-                if (node === undefined || nextNode === undefined) {
-                    return;
-                }
+        if (node === undefined || nextNode === undefined) {
+          return;
+        }
 
-                this.drawing.addLine(node.x, node.y, nextNode.x, nextNode.y);
-            });
-        });
-    }
+        this.drawing.addLine(node.x, node.y, nextNode.x, nextNode.y);
+      });
+    });
+  }
 }

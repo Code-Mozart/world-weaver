@@ -8,7 +8,7 @@ export type Coastline = {
     id: Generated<number>;
     worldCuid: string;
     polygonId: number;
-    groundType: number;
+    groundType: string;
     name: string | null;
 };
 export type Document = {
@@ -17,57 +17,53 @@ export type Document = {
     name: string;
     jsonData: string;
 };
-export type ExtraInformation = {
-    id: Generated<number>;
-    data: string;
-};
 export type Mountain = {
     id: Generated<number>;
     worldCuid: string;
+    networkId: number;
     name: string | null;
 };
-export type Node = {
+export type Network = {
+    id: Generated<number>;
+};
+export type NetworkEdges = {
+    fromNodeId: number;
+    toNodeId: number;
+};
+export type NetworkNode = {
+    id: Generated<number>;
+    pointId: number;
+    networkId: number;
+};
+export type Point = {
     id: Generated<number>;
     x: number;
     y: number;
 };
-export type NodesOnPaths = {
-    nodeId: number;
-    nextNodeId: number | null;
-    pathId: number;
-};
-export type NodesOnPolygons = {
-    nodeId: number;
-    nextNodeId: number | null;
+export type PointsInPolygons = {
     polygonId: number;
-};
-export type Path = {
-    id: Generated<number>;
-    riverId: number | null;
-    mountainId: number | null;
-};
-export type PathLinks = {
-    A: number;
-    B: number;
+    pointId: number;
+    nextPointId: number | null;
 };
 export type Polygon = {
     id: Generated<number>;
+    startPointId: number;
 };
 export type River = {
     id: Generated<number>;
     worldCuid: string;
+    networkId: number;
     name: string | null;
 };
 export type DB = {
-    _PathLinks: PathLinks;
     Coastline: Coastline;
     Document: Document;
-    ExtraInformation: ExtraInformation;
     Mountain: Mountain;
-    Node: Node;
-    NodesOnPaths: NodesOnPaths;
-    NodesOnPolygons: NodesOnPolygons;
-    Path: Path;
+    Network: Network;
+    NetworkEdges: NetworkEdges;
+    NetworkNode: NetworkNode;
+    Point: Point;
+    PointsInPolygons: PointsInPolygons;
     Polygon: Polygon;
     River: River;
 };

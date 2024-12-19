@@ -4,29 +4,29 @@ import type { World } from "$lib/types/world";
 import { createId } from "@paralleldrive/cuid2";
 
 export namespace WorldFactory {
-    /**
-     * Creates a new empty world.
-     */
-    export function createEmpty(): World {
-        return {
-            cuid: createId(),
+  /**
+   * Creates a new empty world.
+   */
+  export function createEmpty(): World {
+    return {
+      cuid: createId(),
 
-            worldDocument: createEmptyWorldDocument(),
+      worldDocument: createEmptyWorldDocument(),
 
-            coastlines: [],
-            rivers: [],
-            mountains: []
-        };
-    }
+      coastlines: [],
+      rivers: [],
+      mountains: [],
+    };
+  }
 
-    export function createEmptyWorldDocument(): WorldDocument {
-        return {
-            id: 0,
-            name: "world",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            authors: [],
-            groundType: GroundType.Land
-        };
-    }
+  export function createEmptyWorldDocument(): WorldDocument {
+    return {
+      id: 0,
+      name: "world",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      authors: [],
+      groundType: GroundType.Land,
+    };
+  }
 }

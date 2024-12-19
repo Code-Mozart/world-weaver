@@ -25,66 +25,76 @@ model Document {
 }
 
 // Abstract node marking a position in the world
-model Node {
+model Point {
   id Int   @id @default(autoincrement())
   x  Float
   y  Float
 
-  Polygons            NodesOnPolygons[] @relation("NodesOnPolygons")
-  NextNodesInPolygons NodesOnPolygons[] @relation("NextNodesInPolygons")
-  Paths               NodesOnPaths[]    @relation("NodesOnPaths")
-  NextNodesInPaths    NodesOnPaths[]    @relation("NextNodesInPaths")
-}
-
-// Abstract path that defines a chain of nodes, e.g. used for rivers
-model Path {
-  id Int @id @default(autoincrement())
-
-  Nodes        NodesOnPaths[]
-  PreviousPath Path[]         @relation("PathLinks")
-  NextPath     Path[]         @relation("PathLinks")
-
-  riverId    Int?
-  mountainId Int?
-
-  River    River?    @relation(fields: [riverId], references: [id])
-  Mountain Mountain? @relation(fields: [mountainId], references: [id])
+  NetworkNode          NetworkNode[]
+  PointsInPolygons     PointsInPolygons[] @relation("PointsInPolygons")
+  NextPointsInPolygons PointsInPolygons[] @relation("NextPointsInPolygons")
+  Polygon              Polygon[]
 }
 
 // Abstract polygon used to define regions in the world
 model Polygon {
-  id    Int               @id @default(autoincrement())
-  Nodes NodesOnPolygons[]
+  id Int @id @default(autoincrement())
 
-  Coastline Coastline?
+  startPointId Int
+  StartPoint   Point @relation(fields: [startPointId], references: [id])
+
+  Coastline        Coastline?
+  PointsInPolygons PointsInPolygons[]
+}
+
+model NetworkNode {
+  id Int @id @default(autoincrement())
+
+  pointId Int
+  Point   Point @relation(fields: [pointId], references: [id])
+
+  // actually this is kind of redundant, because the network knows its starting node
+  // and the information could be retrieved from this, however traversing all networks
+  // on every load/save is unnecessary, so we store it here
+  // also should help with debugging
+  networkId Int
+  Network   Network @relation("NodesInNetwork", fields: [networkId], references: [id])
+
+  NetworkEdgesFrom NetworkEdges[] @relation("NetworkEdgesFrom")
+  NetworkEdgesTo   NetworkEdges[] @relation("NetworkEdgesTo")
+}
+
+model Network {
+  id Int @id @default(autoincrement())
+
+  NetworkNode NetworkNode[] @relation("NodesInNetwork")
+  River       River[]
+  Mountain    Mountain[]
 }
 
 // WORLD MODELS
 
-// Any extra information for elements in the world
-model ExtraInformation {
-  id   Int    @id @default(autoincrement())
-  data String
-}
+// TODO: Add in later version
+// // Any extra information for elements in the world
+// model ExtraInformation {
+//   id   Int    @id @default(autoincrement())
+//   data String
+// }
 
 // A coastline marking the edge between ground types in the world
 model Coastline {
-  id        Int    @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   worldCuid String
-  polygonId Int    @unique
 
-  // 0 Water
-  // 1 Land
-  // 2 Lava
-  // 3 Void
-  //
-  // see src/lib/types/ground-type.ts
-  groundType Int
+  polygonId Int     @unique
+  Shape     Polygon @relation(fields: [polygonId], references: [id])
 
-  // Information
+  // see src/lib/types/ground-type.ts for valid options
+  groundType String
+
+  // user information
   name String?
-
-  Shape Polygon @relation(fields: [polygonId], references: [id])
 
   @@index(worldCuid)
 }
@@ -93,9 +103,11 @@ model Coastline {
 model River {
   id        Int    @id @default(autoincrement())
   worldCuid String
-  Path      Path[]
 
-  // Information
+  networkId Int
+  Network   Network @relation(fields: [networkId], references: [id])
+
+  // user information
   name String?
 
   @@index(worldCuid)
@@ -104,9 +116,11 @@ model River {
 model Mountain {
   id        Int    @id @default(autoincrement())
   worldCuid String
-  Path      Path[]
 
-  // Information
+  networkId Int
+  Network   Network @relation(fields: [networkId], references: [id])
+
+  // user information
   name String?
 
   @@index(worldCuid)
@@ -114,26 +128,25 @@ model Mountain {
 
 // MANY-TO-MANY-MODELS
 
-model NodesOnPolygons {
-  nodeId     Int
-  nextNodeId Int?
-  polygonId  Int
+model PointsInPolygons {
+  polygonId Int
+  Polygon   Polygon @relation(fields: [polygonId], references: [id])
 
-  Node     Node    @relation("NodesOnPolygons", fields: [nodeId], references: [id])
-  NextNode Node?   @relation("NextNodesInPolygons", fields: [nextNodeId], references: [id])
-  Polygon  Polygon @relation(fields: [polygonId], references: [id])
+  pointId Int
+  Point   Point @relation("PointsInPolygons", fields: [pointId], references: [id])
 
-  @@id([nodeId, polygonId])
+  nextPointId Int?
+  NextPoint   Point? @relation("NextPointsInPolygons", fields: [nextPointId], references: [id])
+
+  @@id([polygonId, pointId])
 }
 
-model NodesOnPaths {
-  nodeId     Int
-  nextNodeId Int?
-  pathId     Int
+model NetworkEdges {
+  fromNodeId Int
+  fromNode   NetworkNode @relation("NetworkEdgesFrom", fields: [fromNodeId], references: [id])
 
-  Node     Node  @relation("NodesOnPaths", fields: [nodeId], references: [id])
-  NextNode Node? @relation("NextNodesInPaths", fields: [nextNodeId], references: [id])
-  Path     Path  @relation(fields: [pathId], references: [id])
+  toNodeId Int
+  toNode   NetworkNode @relation("NetworkEdgesTo", fields: [toNodeId], references: [id])
 
-  @@id([nodeId, pathId])
+  @@id([fromNodeId, toNodeId])
 }

@@ -1,84 +1,77 @@
 <script lang="ts">
-    import type { World } from "$lib/types/world";
-    import { onMount } from "svelte";
-    import type { PageServerData } from "../../routes/$types";
+  import { onMount } from "svelte";
+  import type { PageServerData } from "../../routes/$types";
 
-    let { data }: { data: PageServerData } = $props();
+  let { data }: { data: PageServerData } = $props();
 
-    onMount(async () => {
-        const { Application } = await import("pixi.js");
-        const { WorldDrawer } = await import("$lib/view/world-drawer");
-        const { WorldController } = await import(
-            "$lib/controllers/world-controller"
-        );
+  onMount(async () => {
+    const { Application } = await import("pixi.js");
+    const { WorldView } = await import("$lib/view/world-view");
+    const { WorldController } = await import("$lib/controllers/world-controller");
 
-        const app = new Application();
-        await app.init({
-            width: window.innerWidth,
-            height: window.innerHeight,
-            backgroundAlpha: 0,
-            resolution: window.devicePixelRatio,
-            antialias: true,
-            autoDensity: true,
-        });
-
-        const contentDiv = document.getElementById("content-div");
-        if (contentDiv) {
-            contentDiv.oncontextmenu = (event) => event.preventDefault();
-            contentDiv.appendChild(app.canvas);
-
-            const worldDrawer = new WorldDrawer(
-                app,
-                data,
-                getComputedStyle(contentDiv),
-            );
-
-            const worldController = new WorldController(data, worldDrawer);
-
-            app.ticker.add((ticker) => {
-                worldController.update(ticker);
-                worldDrawer.draw();
-            });
-        }
+    const app = new Application();
+    await app.init({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundAlpha: 0,
+      resolution: window.devicePixelRatio,
+      antialias: true,
+      autoDensity: true,
     });
+
+    const contentDiv = document.getElementById("content-div");
+    if (contentDiv) {
+      contentDiv.oncontextmenu = event => event.preventDefault();
+      contentDiv.appendChild(app.canvas);
+
+      const worldDrawer = new WorldView(app, data, getComputedStyle(contentDiv));
+
+      const worldController = new WorldController(data, worldDrawer);
+
+      app.ticker.add(ticker => {
+        worldController.update(ticker);
+        worldDrawer.draw();
+      });
+    }
+  });
 </script>
 
 <div id="content-div" class="content world-view"></div>
 
 <style>
+  .content {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 1;
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+
+    background: white;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .world-view {
+      --primary-color: black;
+    }
+
     .content {
-        position: absolute;
-        width: 100%;
-        top: 0;
-        left: 0;
-        margin: 0;
-        z-index: 1;
+      background: white;
+    }
+  }
 
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        flex: auto;
-
-        background: white;
+  @media (prefers-color-scheme: dark) {
+    .world-view {
+      --primary-color: white;
     }
 
-    @media (prefers-color-scheme: light) {
-        .world-view {
-            --primary-color: black;
-        }
-
-        .content {
-            background: white;
-        }
+    .content {
+      background: black;
     }
-
-    @media (prefers-color-scheme: dark) {
-        .world-view {
-            --primary-color: white;
-        }
-
-        .content {
-            background: black;
-        }
-    }
+  }
 </style>

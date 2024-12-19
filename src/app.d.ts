@@ -1,18 +1,18 @@
-import type { Database } from 'sqlite3'
+import type { Database } from "sqlite3";
 
 declare global {
-	namespace App {
-		// interface Error {}
+  namespace App {
+    // interface Error {}
 
-		// Uncomment the `interface Locals` and create a `db` property
-		interface Locals {
-			db: Database;
-		}
+    // Uncomment the `interface Locals` and create a `db` property
+    interface Locals {
+      db: Database;
+    }
 
-		// interface PageData {}
-		// interface PageState {}
-		// interface Platform {}
-	}
+    // interface PageData {}
+    // interface PageState {}
+    // interface Platform {}
+  }
 }
 
-export { };
+export {};
