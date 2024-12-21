@@ -5,12 +5,20 @@ import type { GroundType } from "./ground-type";
 
 // defines any point on the map
 // this way a coastline vertex and a river mouth can share the same point for example
-export type Point = import("$lib/types/database-wrappers").Point;
+export interface Point {
+  id: number;
+  temporaryCuid: string | null;
+
+  x: number;
+  y: number;
+}
 
 // defines any area on the map with definite boundaries
 // nodes are in clockwise order
 export interface Polygon {
   id: number;
+  temporaryCuid: string | null;
+
   points: Point[];
 }
 
@@ -18,6 +26,8 @@ export namespace Network {
   // defines a single node in a network
   export interface Node {
     id: number;
+    temporaryCuid: string | null;
+
     point: Point;
     nextNodes: Network.Node[];
   }
@@ -27,6 +37,8 @@ export namespace Network {
 // networks must always be fully connected (single component)
 export interface Network {
   id: number;
+  temporaryCuid: string | null;
+
   nodes: Network.Node[];
 }
 
@@ -34,6 +46,8 @@ export interface Network {
 
 export interface Coastline {
   id: number;
+  temporaryCuid: string | null;
+
   shape: Polygon;
   groundType: GroundType;
 
@@ -43,6 +57,8 @@ export interface Coastline {
 
 export interface River {
   id: number;
+  temporaryCuid: string | null;
+
   path: Network;
 
   // user information
@@ -51,6 +67,8 @@ export interface River {
 
 export interface Mountain {
   id: number;
+  temporaryCuid: string | null;
+
   path: Network;
 
   // user information

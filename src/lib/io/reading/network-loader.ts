@@ -115,6 +115,8 @@ function constructNetwork(
 
   return {
     id: networkId,
+    temporaryCuid: null,
+
     nodes: Array.from(nodesMap.values()),
   };
 }
@@ -122,6 +124,8 @@ function constructNetwork(
 function constructUnconnectedNode(nodeRow: NetworkNodeRow, pointsMap: Map<number, Point>): Network.Node {
   return {
     id: nodeRow.id,
+    temporaryCuid: null,
+
     point: getPointOrThrow(pointsMap, nodeRow.pointId),
     nextNodes: [],
   };

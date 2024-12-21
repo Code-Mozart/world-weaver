@@ -119,6 +119,8 @@ function findWorldDocument(documents: Document[]): Document {
 function constructCoastline(coastlineRow: CoastlineRow, polygonsMap: Map<number, Polygon>): Coastline {
   return {
     id: coastlineRow.id,
+    temporaryCuid: null,
+
     shape: getPolygonOrThrow(polygonsMap, coastlineRow.polygonId),
     groundType: GroundType[coastlineRow.groundType.toUpperCase() as keyof typeof GroundType],
     name: coastlineRow.name,
@@ -128,6 +130,8 @@ function constructCoastline(coastlineRow: CoastlineRow, polygonsMap: Map<number,
 function constructRiver(riverRow: RiverRow, networksMap: Map<number, Network>): River {
   return {
     id: riverRow.id,
+    temporaryCuid: null,
+
     path: getNetworkOrThrow(networksMap, riverRow.networkId),
     name: riverRow.name,
   };
@@ -136,6 +140,8 @@ function constructRiver(riverRow: RiverRow, networksMap: Map<number, Network>): 
 function constructMountain(mountainRow: MountainRow, networksMap: Map<number, Network>): Mountain {
   return {
     id: mountainRow.id,
+    temporaryCuid: null,
+
     path: getNetworkOrThrow(networksMap, mountainRow.networkId),
     name: mountainRow.name,
   };

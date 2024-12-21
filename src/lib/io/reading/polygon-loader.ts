@@ -69,5 +69,5 @@ function constructPolygon(
             no next point, because there should not be any points after it, but it did.`);
   }
 
-  return { id: polygonId, points: polygonPoints };
+  return { id: polygonId, temporaryCuid: null, points: polygonPoints };
 }
