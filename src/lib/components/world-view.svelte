@@ -1,13 +1,12 @@
 <script lang="ts">
+  import type { World } from "$lib/types/world";
   import { onMount } from "svelte";
-  import type { PageServerData } from "../../routes/$types";
 
-  let { data }: { data: PageServerData } = $props();
+  let { world }: { world: World } = $props();
 
   onMount(async () => {
     const { Application } = await import("pixi.js");
     const { WorldView } = await import("$lib/view/world-view");
-    const { WorldController } = await import("$lib/controllers/world-controller");
 
     const app = new Application();
     await app.init({
@@ -24,13 +23,16 @@
       contentDiv.oncontextmenu = event => event.preventDefault();
       contentDiv.appendChild(app.canvas);
 
-      const worldDrawer = new WorldView(app, data, getComputedStyle(contentDiv));
+      const worldView = new WorldView(app, world, getComputedStyle(contentDiv));
 
-      const worldController = new WorldController(data, worldDrawer);
+      window.onresize = () => {
+        worldView.resize(window.innerWidth, window.innerHeight);
+        worldView.draw();
+      };
 
       app.ticker.add(ticker => {
-        worldController.update(ticker);
-        worldDrawer.draw();
+        worldView.update(ticker);
+        worldView.draw();
       });
     }
   });

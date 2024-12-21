@@ -1,3 +1,4 @@
+import { DATABASE_PATH_FROM_REPOSITORY_ROOT } from "$env/static/private";
 import type { DB } from "$lib/types/database";
 import type { Database as BetterSQLite3Database } from "better-sqlite3";
 import SQLite from "better-sqlite3";
@@ -16,7 +17,7 @@ export const database = new Kysely<DB>({
 });
 
 function initializeDatabase(): BetterSQLite3Database {
-  const db = new SQLite(process.env.DATABASE_URL);
+  const db = new SQLite(DATABASE_PATH_FROM_REPOSITORY_ROOT);
   db.exec("PRAGMA foreign_keys = ON");
   return db;
 }

@@ -1,17 +1,45 @@
 <script lang="ts">
-  import WorldView from "$lib/components/world-view.svelte";
-  import type { PageServerData } from "./$types";
+  import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
 
-  let { data }: { data: PageServerData } = $props();
+  onMount(async () => {
+    const infoElement = document.getElementById("info");
+    if (infoElement === null) {
+      alert("Failed to load the page, please try reloading!");
+      throw new Error("Failed to load the page, please try reloading!");
+    }
+
+    infoElement.innerText =
+      "No local world found (loading worlds will be supported later). You will be redirected to the new world page.";
+
+    const response = await fetch("/api/worlds", {
+      method: "POST",
+    });
+
+    if (response.ok) {
+      infoElement.innerText = "World created, redirecting...";
+      const { worldCUID } = await response.json();
+
+      try {
+        goto(`/worlds/${worldCUID}`);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  });
 </script>
 
 <svelte:head>
   <title>Home</title>
 </svelte:head>
 
-<WorldView {data} />
+<p id="info">This website requires scripts to be enabled! If you have them enabled, please reload the page.</p>
 
-<!--
 <style>
+  p {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+  }
 </style>
--->

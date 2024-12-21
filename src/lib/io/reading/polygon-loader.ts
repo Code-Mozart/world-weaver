@@ -1,4 +1,4 @@
-import { database } from "$lib/database";
+import { database } from "$lib/database.server";
 import type { PointsInPolygons, Polygon as PolygonRow } from "$lib/types/database-wrappers";
 import type { Point, Polygon } from "$lib/types/world";
 import { getOrThrow as getPointOrThrow } from "./point-loader";

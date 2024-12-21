@@ -1,4 +1,4 @@
-import { database } from "$lib/database";
+import { database } from "$lib/database.server";
 import type { Point } from "$lib/types/database-wrappers";
 
 interface HasPointProperty {

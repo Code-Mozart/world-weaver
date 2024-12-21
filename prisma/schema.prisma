@@ -53,10 +53,6 @@ model NetworkNode {
   pointId Int
   Point   Point @relation(fields: [pointId], references: [id])
 
-  // actually this is kind of redundant, because the network knows its starting node
-  // and the information could be retrieved from this, however traversing all networks
-  // on every load/save is unnecessary, so we store it here
-  // also should help with debugging
   networkId Int
   Network   Network @relation("NodesInNetwork", fields: [networkId], references: [id])
 

@@ -1,10 +1,9 @@
-import { Colors } from "$lib/drawing/colors";
-import type { WorldDrawer } from "$lib/view/world-drawer";
+import type { ControlsDrawer } from "$lib/view/controls-drawer";
 import type { Ticker } from "pixi.js";
 
-export class WorldController {
+export class WorldControls {
   protected worldData: any;
-  protected worldDrawer: WorldDrawer;
+  protected controlsDrawer: ControlsDrawer;
 
   protected mouse: {
     screen: { x: number; y: number };
@@ -13,9 +12,9 @@ export class WorldController {
     rightClick: boolean;
   };
 
-  constructor(worldData: any, worldDrawer: WorldDrawer) {
+  constructor(worldData: any, controlsDrawer: ControlsDrawer) {
     this.worldData = worldData;
-    this.worldDrawer = worldDrawer;
+    this.controlsDrawer = controlsDrawer;
 
     this.registerCallbacks();
 
@@ -30,7 +29,7 @@ export class WorldController {
   public update(ticker: Ticker) {}
 
   protected registerCallbacks() {
-    this.worldDrawer.viewport.onmousedown = event => {
+    this.controlsDrawer.viewport.onmousedown = event => {
       if (event.button === 0) {
         this.mouse.leftClick = true;
       } else if (event.button === 2) {
@@ -38,7 +37,7 @@ export class WorldController {
       }
     };
 
-    this.worldDrawer.viewport.onmouseup = event => {
+    this.controlsDrawer.viewport.onmouseup = event => {
       if (event.button === 0) {
         this.mouse.leftClick = false;
       } else if (event.button === 2) {
@@ -46,18 +45,18 @@ export class WorldController {
       }
     };
 
-    this.worldDrawer.viewport.onmousemove = event => {
+    this.controlsDrawer.viewport.onmousemove = event => {
       this.mouse.screen.x = event.globalX;
       this.mouse.screen.y = event.globalY;
 
-      this.mouse.world = this.worldDrawer.viewport.toWorld(event.globalX, event.globalY);
+      this.mouse.world = this.controlsDrawer.viewport.toWorld(event.globalX, event.globalY);
     };
 
-    this.worldDrawer.viewport.ontouchmove = event => {
+    this.controlsDrawer.viewport.ontouchmove = event => {
       this.mouse.screen.x = event.globalX;
       this.mouse.screen.y = event.globalY;
 
-      this.mouse.world = this.worldDrawer.viewport.toWorld(event.globalX, event.globalY);
+      this.mouse.world = this.controlsDrawer.viewport.toWorld(event.globalX, event.globalY);
     };
   }
 }

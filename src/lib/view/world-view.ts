@@ -1,7 +1,10 @@
 import { Drawing } from "$lib/drawing/drawing";
 import { Viewport } from "pixi-viewport";
-import { Application, Graphics } from "pixi.js";
+import { Application, Graphics, Ticker } from "pixi.js";
 import { WorldDrawer } from "./world-drawer";
+import { WorldControls } from "$lib/controllers/world-controls";
+import { ControlsDrawer } from "./controls-drawer";
+import type { World } from "$lib/types/world";
 
 /**
  * This class is the top level view for drawing the world. It manages
@@ -14,13 +17,18 @@ export class WorldView {
   protected worldSpaceGraphics: Graphics;
   protected worldSpaceDrawing: Drawing;
 
+  protected screenSpaceGraphics: Graphics;
+  protected screenSpaceDrawing: Drawing;
+
   protected worldDrawer: WorldDrawer;
+  protected controlsDrawer: ControlsDrawer;
+  protected worldControls: WorldControls;
 
   get viewport() {
     return this._viewport;
   }
 
-  constructor(application: Application, worldData: any, style: CSSStyleDeclaration) {
+  constructor(application: Application, world: World, style: CSSStyleDeclaration) {
     this._viewport = WorldView.createViewport(application);
     this.style = style;
 
@@ -28,12 +36,26 @@ export class WorldView {
     this._viewport.addChild(this.worldSpaceGraphics);
     this.worldSpaceDrawing = new Drawing(this.worldSpaceGraphics);
 
-    this.worldDrawer = new WorldDrawer(this._viewport, this.worldSpaceDrawing, worldData, style);
+    this.screenSpaceGraphics = new Graphics();
+    application.stage.addChild(this.screenSpaceGraphics);
+    this.screenSpaceDrawing = new Drawing(this.screenSpaceGraphics);
+
+    this.worldDrawer = new WorldDrawer(this._viewport, this.worldSpaceDrawing, world, style);
+    this.controlsDrawer = new ControlsDrawer(this._viewport, this.worldSpaceDrawing, this.screenSpaceDrawing, style);
+    this.worldControls = new WorldControls(world, this.controlsDrawer);
   }
 
   public draw() {
     this.worldSpaceGraphics.clear();
     this.worldDrawer.draw();
+  }
+
+  public update(ticker: Ticker) {
+    this.worldControls.update(ticker);
+  }
+
+  public resize(width: number, height: number) {
+    this._viewport.resize(width, height);
   }
 
   protected static createViewport(application: Application): Viewport {

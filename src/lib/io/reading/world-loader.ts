@@ -1,4 +1,4 @@
-import { database } from "$lib/database";
+import { database } from "$lib/database.server";
 import type {
   Coastline as CoastlineRow,
   River as RiverRow,
@@ -12,11 +12,14 @@ import type { Selectable } from "kysely";
 import { constructNetworks, getNetworkOrThrow, loadNetworks } from "./network-loader";
 import { constructPolygons, getPolygonOrThrow, loadPolygons } from "./polygon-loader";
 import { loadPoints } from "./point-loader";
+import { toEnum } from "$lib/util/enum-helpers";
 
 /**
  * Loads the world from the database
  */
 export async function loadWorld(cuid: string): Promise<World> {
+  const _database = database;
+
   const allDocuments = await database.selectFrom("Document").where("worldCuid", "=", cuid).selectAll().execute();
   const worldDocument = loadWorldDocument(allDocuments);
 
@@ -91,8 +94,9 @@ function loadWorldDocument(documents: Selectable<Document>[]): WorldDocument {
 
   if (!("groundType" in parsed)) throw createLoadError("World document is missing a groundType");
   if (typeof parsed.groundType !== "string") throw createLoadError("World document groundType is not a string");
-  const groundType = GroundType[parsed.groundType.toUpperCase() as keyof typeof GroundType];
-  if (groundType === undefined) throw createLoadError("World document groundType is not a valid ground type");
+  const groundType = toEnum(parsed.groundType, GroundType);
+  if (groundType === undefined)
+    throw createLoadError(`World document groundType "${parsed.groundType.toUpperCase()}" is not a valid ground type`);
 
   return {
     id: parsed.id,
