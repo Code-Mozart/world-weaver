@@ -1,10 +1,11 @@
 import { Drawing } from "$lib/drawing/drawing";
 import { Viewport } from "pixi-viewport";
 import { Application, Graphics, Ticker } from "pixi.js";
-import { WorldDrawer } from "./world-drawer";
+import { WorldDrawer } from "$lib/view/world-drawer";
 import { WorldControls } from "$lib/controllers/world-controls";
-import { ControlsDrawer } from "./controls-drawer";
+import { ControlsDrawer } from "$lib/view/controls-drawer";
 import type { World } from "$lib/types/world";
+import type { Theme } from "$lib/view/themes/theme";
 
 /**
  * This class is the top level view for drawing the world. It manages
@@ -12,7 +13,7 @@ import type { World } from "$lib/types/world";
  */
 export class WorldView {
   protected _viewport: Viewport;
-  protected style: CSSStyleDeclaration;
+  protected theme: Theme;
 
   protected worldSpaceGraphics: Graphics;
   protected worldSpaceDrawing: Drawing;
@@ -28,9 +29,9 @@ export class WorldView {
     return this._viewport;
   }
 
-  constructor(application: Application, world: World, style: CSSStyleDeclaration) {
+  constructor(application: Application, world: World, theme: Theme) {
     this._viewport = WorldView.createViewport(application);
-    this.style = style;
+    this.theme = theme;
 
     this.worldSpaceGraphics = new Graphics();
     this._viewport.addChild(this.worldSpaceGraphics);
@@ -40,8 +41,8 @@ export class WorldView {
     application.stage.addChild(this.screenSpaceGraphics);
     this.screenSpaceDrawing = new Drawing(this.screenSpaceGraphics);
 
-    this.worldDrawer = new WorldDrawer(this._viewport, this.worldSpaceDrawing, world, style);
-    this.controlsDrawer = new ControlsDrawer(this._viewport, this.worldSpaceDrawing, this.screenSpaceDrawing, style);
+    this.worldDrawer = new WorldDrawer(this._viewport, this.worldSpaceDrawing, world, theme);
+    this.controlsDrawer = new ControlsDrawer(this._viewport, this.worldSpaceDrawing, this.screenSpaceDrawing, theme);
     this.worldControls = new WorldControls(world, this.controlsDrawer);
   }
 
