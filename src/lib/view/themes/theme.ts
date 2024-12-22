@@ -5,6 +5,7 @@ export interface Theme {
   description: string;
 
   groundTypes: Theme.GroundTypes;
+  point: Theme.Point;
   coastline: Theme.Coastline;
   rivers: Theme.Rivers;
 }
@@ -19,6 +20,10 @@ export namespace Theme {
     water: GroundType;
     lava: GroundType;
     void: GroundType;
+  }
+
+  export interface Point {
+    radius: number;
   }
 
   export interface Coastline {

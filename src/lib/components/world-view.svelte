@@ -28,6 +28,7 @@
       const worldView = new WorldView(app, world, theme);
 
       window.onresize = () => {
+        app.renderer.resize(window.innerWidth, window.innerHeight);
         worldView.resize(window.innerWidth, window.innerHeight);
         worldView.draw();
       };
@@ -59,6 +60,12 @@
     background: white;
   }
 
+  .world-view-theme {
+    --point-radius: 3;
+    --coastline-outline-width: 1;
+    --river-fill-color: var(--water-fill-color);
+  }
+
   @media (prefers-color-scheme: light) {
     .world-view-theme {
       --land-fill-color: #cef3c3;
@@ -67,9 +74,6 @@
       --void-fill-color: #988399;
 
       --coastline-outline-color: #111111;
-      --coastline-outline-width: 1;
-
-      --river-fill-color: var(--water-fill-color);
     }
 
     .content {
@@ -85,9 +89,6 @@
       --void-fill-color: #58335a;
 
       --coastline-outline-color: #eeeeee;
-      --coastline-outline-width: 1;
-
-      --river-fill-color: var(--water-fill-color);
     }
 
     .content {

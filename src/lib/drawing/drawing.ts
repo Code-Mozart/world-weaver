@@ -52,6 +52,20 @@ export class Drawing {
   }
 
   /**
+   * Adds a filled rectangle to the drawing.
+   *
+   * @param {number} x The x-coordinate of the top-left corner of the rectangle.
+   * @param {number} y The y-coordinate of the top-left corner of the rectangle.
+   * @param {number} width The width of the rectangle.
+   * @param {number} height The height of the rectangle.
+   * @param {FillInput} fillStyle (optional) The fill style of the rectangle. If omitted, the default fill style is used.
+   */
+  public addFilledRectangle(x: number, y: number, width: number, height: number, fillStyle?: FillInput) {
+    this.graphics.rect(x, y, width, height);
+    this.graphics.fill(fillStyle ?? this.defaultFillStyle);
+  }
+
+  /**
    * Adds an outlined rectangle to the drawing.
    *
    * @param {number} x The x-coordinate of the top-left corner of the rectangle.
@@ -85,6 +99,55 @@ export class Drawing {
     this.graphics.fill(fillStyle ?? this.defaultFillStyle);
   }
 
+  /**
+   * Adds a filled circle to the drawing.
+   *
+   * @param {number} x The x-coordinate of the circle.
+   * @param {number} y The y-coordinate of the circle.
+   * @param {number} radius The radius of the circle.
+   * @param {StrokePatternStyle} strokeStyle (optional) The stroke style of the outline. If omitted, the default stroke style is used.
+   */
+  public addOutlinedCircle(x: number, y: number, radius: number, strokeStyle?: StrokePatternStyle) {
+    if (strokeStyle === undefined) {
+      strokeStyle = this.defaultStrokeStyle;
+    }
+
+    if (strokeStyle.pattern === undefined) {
+      this.addSolidOutlinedCircle(x, y, radius, strokeStyle);
+    } else {
+      this.addDashedOutlinedCircle(x, y, radius, strokeStyle);
+    }
+  }
+
+  /**
+   * Adds a filled polygon to the drawing.
+   *
+   * @param {{ x: number; y: number }[]} points The points of the polygon.
+   * @param {FillInput} fillStyle (optional) The fill style of the polygon. If omitted, the default fill style is used.
+   */
+  public addFilledPolygon(points: { x: number; y: number }[], fillStyle?: FillInput) {
+    this.graphics.poly(points);
+    this.graphics.fill(fillStyle ?? this.defaultFillStyle);
+  }
+
+  /**
+   * Adds an outlined polygon to the drawing.
+   *
+   * @param {{ x: number; y: number }[]} points The points of the polygon.
+   * @param {StrokePatternStyle} strokeStyle (optional) The stroke style of the outline. If omitted, the default stroke style is used.
+   */
+  public addOutlinedPolygon(points: { x: number; y: number }[], strokeStyle?: StrokePatternStyle) {
+    if (strokeStyle === undefined) {
+      strokeStyle = this.defaultStrokeStyle;
+    }
+
+    if (strokeStyle.pattern === undefined) {
+      this.addSolidOutlinedPolygon(points, strokeStyle);
+    } else {
+      this.addDashedPolyline([...points, points[0]], strokeStyle);
+    }
+  }
+
   protected addSolidOutlinedRectangle(
     x: number,
     y: number,
@@ -109,6 +172,31 @@ export class Drawing {
     const bottomRight = { x: x + width, y: y + height };
 
     this.addDashedPolyline([topLeft, topRight, bottomRight, bottomLeft, topLeft], strokeStyle);
+  }
+
+  protected addSolidOutlinedCircle(x: number, y: number, radius: number, strokeStyle: StrokePatternStyle) {
+    this.graphics.circle(x, y, radius);
+    this.graphics.stroke(strokeStyle);
+  }
+
+  protected addDashedOutlinedCircle(
+    x: number,
+    y: number,
+    radius: number,
+    strokeStyle: StrokePatternStyle,
+    numberOfSegments: number = 32,
+  ) {
+    const points = Array.from({ length: numberOfSegments }, (_, i) => {
+      const angle = (i / numberOfSegments) * Math.PI * 2;
+      return { x: x + radius * Math.cos(angle), y: y + radius * Math.sin(angle) };
+    });
+
+    this.addDashedPolyline(points, strokeStyle);
+  }
+
+  protected addSolidOutlinedPolygon(points: { x: number; y: number }[], strokeStyle: StrokePatternStyle) {
+    this.graphics.poly(points);
+    this.graphics.stroke(strokeStyle);
   }
 
   // PERFORMANCE: Passing the points as lots of 2-element objects is not very efficient

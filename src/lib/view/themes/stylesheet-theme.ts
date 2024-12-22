@@ -6,6 +6,7 @@ export class StylesheetTheme implements Theme {
     "A theme defined by a stylesheet. May be context-aware \
     through CSS selectors (e.g. supporting light and dark mode)";
 
+  point: Theme.Point;
   groundTypes: Theme.GroundTypes;
   coastline: Theme.Coastline;
   rivers: Theme.Rivers;
@@ -16,6 +17,9 @@ export class StylesheetTheme implements Theme {
       water: { fillColor: getVariable("--water-fill-color", style) },
       lava: { fillColor: getVariable("--lava-fill-color", style) },
       void: { fillColor: getVariable("--void-fill-color", style) },
+    };
+    this.point = {
+      radius: parseFloat(getVariable("--point-radius", style)),
     };
     this.coastline = {
       outline: {
@@ -30,5 +34,9 @@ export class StylesheetTheme implements Theme {
 }
 
 function getVariable(variableName: string, style: CSSStyleDeclaration): string {
-  return style.getPropertyValue(variableName);
+  const value = style.getPropertyValue(variableName);
+  if (value === "") {
+    throw new Error(`Missing CSS variable: ${variableName}`);
+  }
+  return value;
 }

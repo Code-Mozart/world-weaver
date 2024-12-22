@@ -84,6 +84,9 @@ export class WorldView {
         underflow: "center",
       })
       .clampZoom({
+        minWidth: 10,
+        minHeight: 10,
+
         maxWidth: viewport.worldWidth * 2,
         maxHeight: viewport.worldHeight * 2,
       });
