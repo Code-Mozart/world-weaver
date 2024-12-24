@@ -62,7 +62,7 @@
   }
 
   .world-view-theme {
-    --point-radius: 3;
+    --point-radius: 5;
     --coastline-outline-width: 1;
     --river-fill-color: var(--water-fill-color);
   }

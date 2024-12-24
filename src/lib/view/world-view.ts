@@ -52,11 +52,26 @@ export class WorldView {
   }
 
   public update(ticker: Ticker) {
+    this.updateViewportBounds();
     this.worldControls.update(ticker);
   }
 
   public resize(width: number, height: number) {
     this._viewport.resize(width, height);
+  }
+
+  protected updateViewportBounds() {
+    const viewport = this.viewport;
+
+    const maxOffsetFactor = 0.8 / viewport.scaled;
+
+    viewport.clamp({
+      left: -maxOffsetFactor * viewport.worldWidth,
+      top: -maxOffsetFactor * viewport.worldHeight,
+      right: (maxOffsetFactor + 1) * viewport.worldWidth,
+      bottom: (maxOffsetFactor + 1) * viewport.worldHeight,
+      underflow: "center",
+    })
   }
 
   protected static createViewport(application: Application): Viewport {
@@ -77,13 +92,6 @@ export class WorldView {
       .pinch()
       .wheel({ trackpadPinch: true, wheelZoom: false })
       .decelerate()
-      .clamp({
-        left: -viewport.worldWidth / 2,
-        top: -viewport.worldHeight / 2,
-        right: (viewport.worldWidth * 3) / 2,
-        bottom: (viewport.worldHeight * 3) / 2,
-        underflow: "center",
-      })
       .clampZoom({
         minWidth: 10,
         minHeight: 10,
