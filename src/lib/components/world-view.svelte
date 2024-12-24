@@ -22,6 +22,7 @@
     const contentDiv = document.getElementById("content-div");
     if (contentDiv) {
       contentDiv.oncontextmenu = event => event.preventDefault();
+      contentDiv.onwheel = event => event.preventDefault();
       contentDiv.appendChild(app.canvas);
 
       const theme = new StylesheetTheme(getComputedStyle(contentDiv));

@@ -66,15 +66,16 @@ export class WorldView {
       worldWidth: 1000,
       worldHeight: 1000,
 
+      passiveWheel: false,
       events: application.renderer.events,
     });
     viewport.options.disableOnContextMenu = true;
     application.stage.addChild(viewport);
 
     viewport
-      .drag({ mouseButtons: "right" })
+      .drag({ mouseButtons: "right",  wheel: true })
       .pinch()
-      .wheel()
+      .wheel({ trackpadPinch: true, wheelZoom: false })
       .decelerate()
       .clamp({
         left: -viewport.worldWidth / 2,
