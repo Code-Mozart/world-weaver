@@ -18,10 +18,11 @@ datasource db {
 model Document {
   id        Int    @id @default(autoincrement())
   worldCuid String
-  name      String @unique
+  name      String
   jsonData  String
 
   @@index(worldCuid)
+  @@unique([worldCuid, name], name: "documentNameInWorld")
 }
 
 // Abstract node marking a position in the world
