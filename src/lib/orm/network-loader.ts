@@ -4,8 +4,8 @@ import type {
   NetworkNode as NetworkNodeRow,
   NetworkEdges as NetworkEdgesRow,
 } from "$lib/types/database-wrappers";
-import type { Network, Point } from "$lib/types/world";
-import { getOrThrow as getPointOrThrow } from "./point-loader";
+import type { Network as APINetwork } from "$lib/types/api/world";
+import type { Network } from "$lib/types/world";
 
 interface HasNetworkProperty {
   networkId: number;
@@ -42,16 +42,15 @@ export async function loadNetworks(...args: HasNetworkProperty[]): Promise<LoadN
   };
 }
 
-export function constructNetworks(
+export function constructNetworksWithIdReferences(
   networkRows: NetworkRow[],
   networkNodeRows: NetworkNodeRow[],
   networkEdgeRows: NetworkEdgesRow[],
-  pointsMap: Map<number, Point>,
-): Map<number, Network> {
+): Map<number, APINetwork> {
   return new Map(
     networkRows.map(networkRow => [
       networkRow.id,
-      constructNetwork(networkRow, networkNodeRows, networkEdgeRows, pointsMap),
+      constructNetworkWithIdReferences(networkRow, networkNodeRows, networkEdgeRows),
     ]),
   );
 }
@@ -84,51 +83,28 @@ async function validateNetworkEdges(networkNodeIds: number[]) {
   throw new Error(`Invalid edges found: ${JSON.stringify(invalidEdges)}`);
 }
 
-function constructNetwork(
+function constructNetworkWithIdReferences(
   networkRow: NetworkRow,
-  networkNodeRows: NetworkNodeRow[],
-  networkEdgeRows: NetworkEdgesRow[],
-  pointsMap: Map<number, Point>,
-): Network {
+  nodeRows: NetworkNodeRow[],
+  edgeRows: NetworkEdgesRow[],
+): APINetwork {
   const networkId = networkRow.id;
-  const nodeRowsInNetwork = networkNodeRows.filter(row => row.networkId == networkId);
+  const nodeRowsInNetwork = nodeRows.filter(row => row.networkId == networkId);
+  const nodesMap = new Map(nodeRowsInNetwork.map(constructNetworkNodeWithIdReferences));
 
   // We only need to check the "from" nodes, as the "to" nodes are guaranteed
   // to always be in the same network
-  const edgesInNetwork = networkEdgeRows.filter(edge => edge.fromNodeId in nodeRowsInNetwork);
-
-  // 1. Construct all nodes without any of the connections
-  const nodesMap: Map<number, Network.Node> = new Map(
-    networkNodeRows
-      .filter(row => row.networkId == networkId)
-      .map(row => [row.id, constructUnconnectedNode(row, pointsMap)]),
-  );
-
-  // 2. Connect the nodes according to the edges
-  edgesInNetwork.forEach(edge => {
-    const fromNode = getNodeOrThrow(nodesMap, edge.fromNodeId);
-    const toNode = getNodeOrThrow(nodesMap, edge.toNodeId);
-    fromNode.nextNodes.push(toNode);
-  });
-
-  // LATER: perhaps it will become necessary to sort the network later or find a start node
+  const edgesInNetwork = edgeRows.filter(edge => edge.fromNodeId in nodeRowsInNetwork);
 
   return {
     id: networkId,
-    temporaryCuid: null,
-
-    nodes: Array.from(nodesMap.values()),
+    nodes: nodesMap,
+    edges: edgesInNetwork
   };
 }
 
-function constructUnconnectedNode(nodeRow: NetworkNodeRow, pointsMap: Map<number, Point>): Network.Node {
-  return {
-    id: nodeRow.id,
-    temporaryCuid: null,
-
-    point: getPointOrThrow(pointsMap, nodeRow.pointId),
-    nextNodes: [],
-  };
+function constructNetworkNodeWithIdReferences(row: NetworkNodeRow): [number, APINetwork.Node] {
+  return [row.id, { id: row.id, pointId: row.pointId }];
 }
 
 function getNodeOrThrow(nodesMap: Map<number, Network.Node>, id: number): Network.Node {

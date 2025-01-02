@@ -1,9 +1,12 @@
+import type { World } from "$lib/types/world";
 import type { ControlsDrawer } from "$lib/view/controls-drawer";
+import type { WorldDrawer } from "$lib/view/world-drawer";
 import type { Ticker } from "pixi.js";
 
 export class WorldControls {
-  protected worldData: any;
+  protected worldData: World;
   protected controlsDrawer: ControlsDrawer;
+  protected worldDrawer: WorldDrawer;
 
   protected mouse: {
     screen: { x: number; y: number };
@@ -12,9 +15,10 @@ export class WorldControls {
     rightClick: boolean;
   };
 
-  constructor(worldData: any, controlsDrawer: ControlsDrawer) {
+  constructor(worldData: World, controlsDrawer: ControlsDrawer, worldDrawer: WorldDrawer) {
     this.worldData = worldData;
     this.controlsDrawer = controlsDrawer;
+    this.worldDrawer = worldDrawer;
 
     this.registerCallbacks();
 

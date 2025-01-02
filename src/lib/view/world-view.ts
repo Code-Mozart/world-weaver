@@ -43,7 +43,7 @@ export class WorldView {
 
     this.worldDrawer = new WorldDrawer(this._viewport, this.worldSpaceDrawing, world, theme);
     this.controlsDrawer = new ControlsDrawer(this._viewport, this.worldSpaceDrawing, this.screenSpaceDrawing, theme);
-    this.worldControls = new WorldControls(world, this.controlsDrawer);
+    this.worldControls = new WorldControls(world, this.controlsDrawer, this.worldDrawer);
   }
 
   public draw() {

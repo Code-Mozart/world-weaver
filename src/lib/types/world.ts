@@ -89,3 +89,8 @@ export interface World {
   rivers: River[];
   mountains: Mountain[];
 }
+
+// Unions
+
+export type Geometry = Point | Network | Network.Node | Polygon;
+export type WorldObject = Coastline | River | Mountain;

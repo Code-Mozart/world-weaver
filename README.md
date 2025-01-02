@@ -6,6 +6,11 @@ Weave your own worlds – A vector based map editor for creating 2D fantasy maps
 
 ### Roadmap and current development
 
+**Changes to data model**
+
+- new field in river network edge: width
+- new fields for mountain network node: radius and height (edge width is interpolated between mountain point radii)
+
 **World Deltas**
 
 - Implement the world delta processing as outlined in the [OpenAPI specification](documentation/openapi.yml)
@@ -23,6 +28,14 @@ Weave your own worlds – A vector based map editor for creating 2D fantasy maps
 - Rendering the world (just the background depending on the worlds ground type for empty worlds)
 - Selecting points in editor
 - Controls for moving points
+
+**Additional world objects**
+
+- Roads using networks
+- Forests using polygons
+- Settlements using points
+- Arbitrary information that can be brought into an hierarchy and uses any geometry (points, networks, polygons)
+- Hills and Dunes as polygons
 
 ### Running the app
 

@@ -7,19 +7,20 @@ import type {
 } from "$lib/types/database-wrappers";
 import { type WorldDocument } from "$lib/types/documents/world-document";
 import { GroundType } from "$lib/types/ground-type";
-import type { Coastline, Network, Mountain, River, Polygon, World } from "$lib/types/world";
+import type { World as APIWorld, Coastline as APICoastline, River as APIRiver, Mountain as APIMountain } from "$lib/types/api/world";
 import type { Selectable } from "kysely";
-import { constructNetworks, getNetworkOrThrow, loadNetworks } from "./network-loader";
-import { constructPolygons, getPolygonOrThrow, loadPolygons } from "./polygon-loader";
-import { loadPoints } from "./point-loader";
+import { constructNetworksWithIdReferences, loadNetworks } from "$lib/orm/network-loader";
+import { constructPolygonsWithIdReferences, loadPolygons } from "$lib/orm/polygon-loader";
+import { loadPoints } from "$lib/orm/point-loader";
 import { toEnum } from "$lib/util/enum-helpers";
 
 /**
- * Loads the world from the database
+ * Loads the world from the database into an API world (that uses id's and does not rely
+ * on POJO identity for relations).
+ * 
+ * @param cuid {string} - The CUID of the world whose data should be loaded.
  */
-export async function loadWorld(cuid: string): Promise<World> {
-  const _database = database;
-
+export async function loadWorldFromDatabase(cuid: string): Promise<APIWorld> {
   const allDocuments = await database.selectFrom("Document").where("worldCuid", "=", cuid).selectAll().execute();
   const worldDocument = loadWorldDocument(allDocuments);
 
@@ -34,30 +35,31 @@ export async function loadWorld(cuid: string): Promise<World> {
   const { polygonRows, pointsInPolygons } = await loadPolygons(...coastlineRows);
   const { networkRows, networkNodeRows, networkEdgeRows } = await loadNetworks(...riverRows, ...mountainRows);
 
+  // 3. Construct the corresponding JSON serializable data, now that we have all the data from the database loaded up
+  //    This data will not rely on POJO identity for relations but use numeric id's and maps.
+
   // We should not need to load the points from the polygons 'nextPointId' column, because they should always
   // be included as 'pointId' for some other row in the 'PointsInPolygons' table
   const pointsMap = await loadPoints(...networkNodeRows, ...pointsInPolygons);
 
-  // 3. Construct the corresponding in-memory data, now that we have all the data from the database loaded up
+  const polygonMap = constructPolygonsWithIdReferences(polygonRows, pointsInPolygons);
+  const networkMap = constructNetworksWithIdReferences(networkRows, networkNodeRows, networkEdgeRows);
 
-  const polygonsMap = constructPolygons(polygonRows, pointsInPolygons, pointsMap);
-  const networksMap = constructNetworks(networkRows, networkNodeRows, networkEdgeRows, pointsMap);
-
-  // 4. Create the in-memory world objects
-
-  const coastlines = coastlineRows.map(coastlineRow => constructCoastline(coastlineRow, polygonsMap));
-  const rivers = riverRows.map(riverRow => constructRiver(riverRow, networksMap));
-  const mountains = mountainRows.map(mountainRow => constructMountain(mountainRow, networksMap));
+  const coastlines = coastlineRows.map(coastlineRow => constructCoastlineWithIdReferences(coastlineRow));
+  const rivers = riverRows.map(riverRow => constructRiverWithIdReferences(riverRow));
+  const mountains = mountainRows.map(mountainRow => constructMountainWithIdReferences(mountainRow));
 
   return {
-    cuid,
-
-    worldDocument,
+    points: pointsMap,
+    polygons: polygonMap,
+    networks: networkMap,
 
     coastlines,
     rivers,
     mountains,
-  };
+
+    worldDocument,
+  }
 }
 
 /**
@@ -116,34 +118,28 @@ function findWorldDocument(documents: Document[]): Document {
   return worldDocumentRow;
 }
 
-function constructCoastline(coastlineRow: CoastlineRow, polygonsMap: Map<number, Polygon>): Coastline {
+function constructCoastlineWithIdReferences(row: CoastlineRow): APICoastline {
   return {
-    id: coastlineRow.id,
-    temporaryCuid: null,
-
-    shape: getPolygonOrThrow(polygonsMap, coastlineRow.polygonId),
-    groundType: GroundType[coastlineRow.groundType.toUpperCase() as keyof typeof GroundType],
-    name: coastlineRow.name,
+    id: row.id,
+    polygonId: row.polygonId,
+    groundType: GroundType[row.groundType.toUpperCase() as keyof typeof GroundType],
+    name: row.name,
   };
 }
 
-function constructRiver(riverRow: RiverRow, networksMap: Map<number, Network>): River {
+function constructRiverWithIdReferences(row: RiverRow): APIRiver {
   return {
-    id: riverRow.id,
-    temporaryCuid: null,
-
-    path: getNetworkOrThrow(networksMap, riverRow.networkId),
-    name: riverRow.name,
+    id: row.id,
+    networkId: row.networkId,
+    name: row.name,
   };
 }
 
-function constructMountain(mountainRow: MountainRow, networksMap: Map<number, Network>): Mountain {
+function constructMountainWithIdReferences(row: MountainRow): APIMountain {
   return {
-    id: mountainRow.id,
-    temporaryCuid: null,
-
-    path: getNetworkOrThrow(networksMap, mountainRow.networkId),
-    name: mountainRow.name,
+    id: row.id,
+    networkId: row.networkId,
+    name: row.name,
   };
 }
 
