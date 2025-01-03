@@ -6,7 +6,7 @@ import type { PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({ params }) => {
   const world = await loadWorldFromDatabase(params.id);
   addDemoObjects(world);
-  return { world };
+  return { world, cuid: params.id };
 };
 
 function addDemoObjects(world: APIWorld) {
@@ -28,9 +28,9 @@ function addDemoObjects(world: APIWorld) {
   });
 }
 
-function addDemoPolygon(world: APIWorld, points: {x: number, y: number}[]): number {
+function addDemoPolygon(world: APIWorld, points: { x: number; y: number }[]): number {
   const id = getRandomDemoId();
-  world.polygons.set(id, { id, pointIds: points.map(point => addDemoPoint(world, point.x, point.y)) })
+  world.polygons.set(id, { id, pointIds: points.map(point => addDemoPoint(world, point.x, point.y)) });
   return id;
 }
 
@@ -41,5 +41,5 @@ function addDemoPoint(world: APIWorld, x: number, y: number): number {
 }
 
 function getRandomDemoId(): number {
-  return Math.random() * 0xFFFFFFFF;
+  return Math.random() * 0xffffffff;
 }

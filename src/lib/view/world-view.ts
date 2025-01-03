@@ -71,7 +71,7 @@ export class WorldView {
       right: (maxOffsetFactor + 1) * viewport.worldWidth,
       bottom: (maxOffsetFactor + 1) * viewport.worldHeight,
       underflow: "center",
-    })
+    });
   }
 
   protected static createViewport(application: Application): Viewport {
@@ -88,7 +88,7 @@ export class WorldView {
     application.stage.addChild(viewport);
 
     viewport
-      .drag({ mouseButtons: "right",  wheel: true })
+      .drag({ mouseButtons: "right", wheel: true })
       .pinch()
       .wheel({ trackpadPinch: true, wheelZoom: false })
       .decelerate()
