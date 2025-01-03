@@ -1,18 +1,36 @@
 <script lang="ts">
   import type { EditorWorld } from "$lib/controllers/editor-world";
+  import { onMount } from "svelte";
 
   let {
     world,
     onNavigationControlsChanged,
   }: { world: EditorWorld; onNavigationControlsChanged?: (value: "mouse" | "gesture") => void } = $props();
 
-  function handleNaviagtionControlSetting(event: Event) {
+  function handleNavigationControlSetting(event: Event) {
     const value = (event.target as HTMLInputElement).value;
+    setNavigationControls(value);
+  }
+
+  function setNavigationControls(value: any) {
     if (!["mouse", "gesture"].includes(value)) {
       throw new Error(`Invalid navigation control value: ${value}`);
     }
     onNavigationControlsChanged?.(value as "mouse" | "gesture");
   }
+
+  onMount(() => {
+    document.onvisibilitychange = () => {
+      if (document.hidden) return;
+
+      const naviationControlsElement = document.getElementById("navigation-controls");
+      if (naviationControlsElement) {
+        const checkedElement = naviationControlsElement.querySelector("input:checked");
+        const value = (checkedElement as HTMLInputElement | null)?.value;
+        setNavigationControls(value);
+      }
+    };
+  });
 </script>
 
 <div class="world-ui">
@@ -23,8 +41,8 @@
     <div class="toggle-group-container">
       <p>Navigation Controls</p>
 
-      <div class="toggle-group navigation-controls">
-        <input type="radio" name="default" id="mouse-controls" value="mouse" oninput={handleNaviagtionControlSetting} />
+      <div class="toggle-group" id="navigation-controls">
+        <input type="radio" name="default" id="mouse-controls" value="mouse" oninput={handleNavigationControlSetting} />
         <label for="mouse-controls">Mouse Controls</label>
 
         <input
@@ -32,7 +50,7 @@
           name="default"
           id="gesture-controls"
           value="gesture"
-          oninput={handleNaviagtionControlSetting}
+          oninput={handleNavigationControlSetting}
           checked
         />
         <label for="gesture-controls">Gesture Controls</label>

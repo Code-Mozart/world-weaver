@@ -47,8 +47,11 @@ export class WorldView {
   }
 
   public draw() {
+    this.screenSpaceGraphics.clear();
     this.worldSpaceGraphics.clear();
+
     this.worldDrawer.draw();
+    this.controlsDrawer.draw();
   }
 
   public update(ticker: Ticker) {
@@ -114,12 +117,10 @@ export class WorldView {
   }
 
   protected setMouseViewportControls() {
-    console.log("setMouseViewportControls");
     this._viewport.drag({ mouseButtons: "right" }).wheel({ trackpadPinch: false, wheelZoom: true }).decelerate();
   }
 
   protected setGestureViewportControls() {
-    console.log("setGestureViewportControls");
     this._viewport.drag({ pressDrag: false }).pinch().wheel({ trackpadPinch: true, wheelZoom: false }).decelerate();
   }
 }

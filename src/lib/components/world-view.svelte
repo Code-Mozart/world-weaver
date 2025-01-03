@@ -49,7 +49,7 @@
   });
 
   export function setNavigationControls(value: "mouse" | "gesture") {
-    worldView.setNavigationControls(value);
+    worldView?.setNavigationControls(value);
   }
 </script>
 
@@ -76,6 +76,13 @@
     --point-radius: 5;
     --coastline-outline-width: 1;
     --river-fill-color: var(--water-fill-color);
+
+    --cursor-radius: 5;
+
+    --selection-box-border-width: 2;
+    --selection-box-border-color: var(--foreground-color);
+    --selection-box-border-pattern: [2, 2];
+    --selection-box-fill-color: rgba(var(--inverted-background-color), 0.3);
   }
 
   @media (prefers-color-scheme: light) {
@@ -86,6 +93,8 @@
       --void-fill-color: #988399;
 
       --coastline-outline-color: #111111;
+
+      --cursor-color: #444444;
     }
 
     .content {
@@ -101,6 +110,8 @@
       --void-fill-color: #58335a;
 
       --coastline-outline-color: #eeeeee;
+
+      --cursor-color: #cccccc;
     }
 
     .content {

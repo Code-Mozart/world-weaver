@@ -4,3 +4,10 @@ import type { World } from "$lib/types/world";
 export interface EditorWorld extends World {
   geometryRegistry: GeometryRegistry;
 }
+
+export interface Rectangle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}

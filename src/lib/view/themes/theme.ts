@@ -8,6 +8,8 @@ export interface Theme {
   point: Theme.Point;
   coastline: Theme.Coastline;
   rivers: Theme.Rivers;
+
+  controls: Theme.Controls;
 }
 
 export namespace Theme {
@@ -32,5 +34,15 @@ export namespace Theme {
 
   export interface Rivers {
     fillColor: ColorSource;
+  }
+
+  export interface Controls {
+    cursorRadius: number;
+    cursorColor: ColorSource;
+
+    selectionBoxBorderColor: ColorSource;
+    selectionBoxBorderWidth: number;
+    slectionBoxBorderPattern: number[];
+    selectionBoxFillColor: ColorSource;
   }
 }

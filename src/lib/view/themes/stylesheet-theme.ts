@@ -1,3 +1,4 @@
+import { resolveColor } from "$lib/util/color-helpers";
 import type { Theme } from "$lib/view/themes/theme";
 
 export class StylesheetTheme implements Theme {
@@ -11,6 +12,8 @@ export class StylesheetTheme implements Theme {
   coastline: Theme.Coastline;
   rivers: Theme.Rivers;
 
+  controls: Theme.Controls;
+
   style: CSSStyleDeclaration;
 
   constructor(style: CSSStyleDeclaration) {
@@ -18,22 +21,32 @@ export class StylesheetTheme implements Theme {
     this.initializeObserver();
 
     this.groundTypes = {
-      land: { fillColor: getVariable("--land-fill-color", this.style) },
-      water: { fillColor: getVariable("--water-fill-color", this.style) },
-      lava: { fillColor: getVariable("--lava-fill-color", this.style) },
-      void: { fillColor: getVariable("--void-fill-color", this.style) },
+      land: { fillColor: getColorSource("--land-fill-color", this.style) },
+      water: { fillColor: getColorSource("--water-fill-color", this.style) },
+      lava: { fillColor: getColorSource("--lava-fill-color", this.style) },
+      void: { fillColor: getColorSource("--void-fill-color", this.style) },
     };
     this.point = {
-      radius: parseFloat(getVariable("--point-radius", this.style)),
+      radius: getNumber("--point-radius", this.style),
     };
     this.coastline = {
       outline: {
-        color: getVariable("--coastline-outline-color", this.style),
-        width: parseFloat(getVariable("--coastline-outline-width", this.style)),
+        color: getColorSource("--coastline-outline-color", this.style),
+        width: getNumber("--coastline-outline-width", this.style),
       },
     };
     this.rivers = {
-      fillColor: getVariable("--river-fill-color", this.style),
+      fillColor: getColorSource("--river-fill-color", this.style),
+    };
+
+    this.controls = {
+      cursorRadius: getNumber("--cursor-radius", this.style),
+      cursorColor: getColorSource("--cursor-color", this.style),
+
+      selectionBoxBorderColor: getColorSource("--selection-box-border-color", this.style),
+      selectionBoxBorderWidth: getNumber("--selection-box-border-width", this.style),
+      slectionBoxBorderPattern: getNumberArray("--selection-box-border-pattern", this.style),
+      selectionBoxFillColor: getColorSource("--selection-box-fill-color", this.style),
     };
   }
 
@@ -45,22 +58,32 @@ export class StylesheetTheme implements Theme {
 
   protected update() {
     this.groundTypes = {
-      land: { fillColor: getVariable("--land-fill-color", this.style) },
-      water: { fillColor: getVariable("--water-fill-color", this.style) },
-      lava: { fillColor: getVariable("--lava-fill-color", this.style) },
-      void: { fillColor: getVariable("--void-fill-color", this.style) },
+      land: { fillColor: getColorSource("--land-fill-color", this.style) },
+      water: { fillColor: getColorSource("--water-fill-color", this.style) },
+      lava: { fillColor: getColorSource("--lava-fill-color", this.style) },
+      void: { fillColor: getColorSource("--void-fill-color", this.style) },
     };
     this.point = {
-      radius: parseFloat(getVariable("--point-radius", this.style)),
+      radius: getNumber("--point-radius", this.style),
     };
     this.coastline = {
       outline: {
-        color: getVariable("--coastline-outline-color", this.style),
-        width: parseFloat(getVariable("--coastline-outline-width", this.style)),
+        color: getColorSource("--coastline-outline-color", this.style),
+        width: getNumber("--coastline-outline-width", this.style),
       },
     };
     this.rivers = {
-      fillColor: getVariable("--river-fill-color", this.style),
+      fillColor: getColorSource("--river-fill-color", this.style),
+    };
+
+    this.controls = {
+      cursorRadius: getNumber("--cursor-radius", this.style),
+      cursorColor: getColorSource("--cursor-color", this.style),
+
+      selectionBoxBorderColor: getColorSource("--selection-box-border-color", this.style),
+      selectionBoxBorderWidth: getNumber("--selection-box-border-width", this.style),
+      slectionBoxBorderPattern: getNumberArray("--selection-box-border-pattern", this.style),
+      selectionBoxFillColor: getColorSource("--selection-box-fill-color", this.style),
     };
   }
 }
@@ -70,5 +93,28 @@ function getVariable(variableName: string, style: CSSStyleDeclaration): string {
   if (value === "") {
     throw new Error(`Missing CSS variable: ${variableName}`);
   }
+  return value;
+}
+
+function getColorSource(variableName: string, style: CSSStyleDeclaration): string {
+  const value = getVariable(variableName, style);
+  return resolveColor(value);
+}
+
+function getNumber(variableName: string, style: CSSStyleDeclaration): number {
+  return parseFloat(getVariable(variableName, style));
+}
+
+function getNumberArray(variableName: string, style: CSSStyleDeclaration): number[] {
+  const rawValue = getVariable(variableName, style);
+  const value = JSON.parse(rawValue);
+  if (!Array.isArray(value)) {
+    throw new Error(`Expected array for CSS variable ${variableName}, but got '${rawValue}'`);
+  }
+  value.forEach((element, index) => {
+    if (typeof element !== "number") {
+      throw new Error(`Expected number array for CSS variable ${variableName}, but element ${index} is not a number`);
+    }
+  });
   return value;
 }
