@@ -42,28 +42,6 @@
 </div>
 
 <style>
-  @media (prefers-color-scheme: light) {
-    .world-ui {
-      --background-color: #ffffff;
-      --foreground-color: #111111;
-      --weak-contrast-color: rgb(236, 236, 236);
-
-      --inverted-foreground-color: #ffffff;
-      --inverted-background-color: #111111;
-    }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .world-ui {
-      --background-color: #111111;
-      --foreground-color: #dddddd;
-      --weak-contrast-color: rgb(20, 20, 20);
-
-      --inverted-foreground-color: #000000;
-      --inverted-background-color: #aaaaaa;
-    }
-  }
-
   .world-ui {
     position: absolute;
     top: 1em;
@@ -79,12 +57,10 @@
     flex-direction: column;
     align-items: start;
     justify-content: space-between;
-
-    font-family: sans-serif;
-    color: var(--foreground-color);
   }
 
   p {
+    text-align: start;
     margin: 0;
   }
 

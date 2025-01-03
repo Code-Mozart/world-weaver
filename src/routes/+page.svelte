@@ -1,4 +1,6 @@
 <script lang="ts">
+  import "$lib/styles/info-text.css";
+
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
 
@@ -34,12 +36,3 @@
 </svelte:head>
 
 <p id="info">This website requires scripts to be enabled! If you have them enabled, please reload the page.</p>
-
-<style>
-  p {
-    display: block;
-    margin: 0 auto;
-    width: 100%;
-    text-align: center;
-  }
-</style>

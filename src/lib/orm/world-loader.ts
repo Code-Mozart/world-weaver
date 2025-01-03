@@ -7,7 +7,13 @@ import type {
 } from "$lib/types/database-wrappers";
 import { type WorldDocument } from "$lib/types/documents/world-document";
 import { GroundType } from "$lib/types/ground-type";
-import type { World as APIWorld, Coastline as APICoastline, River as APIRiver, Mountain as APIMountain } from "$lib/types/api/world";
+import type {
+  World as APIWorld,
+  Coastline as APICoastline,
+  River as APIRiver,
+  Mountain as APIMountain,
+} from "$lib/types/api/world";
+import { ServerError } from "$lib/errors/server-error";
 import type { Selectable } from "kysely";
 import { constructNetworksWithIdReferences, loadNetworks } from "$lib/orm/network-loader";
 import { constructPolygonsWithIdReferences, loadPolygons } from "$lib/orm/polygon-loader";
@@ -17,7 +23,7 @@ import { toEnum } from "$lib/util/enum-helpers";
 /**
  * Loads the world from the database into an API world (that uses id's and does not rely
  * on POJO identity for relations).
- * 
+ *
  * @param cuid {string} - The CUID of the world whose data should be loaded.
  */
 export async function loadWorldFromDatabase(cuid: string): Promise<APIWorld> {
@@ -59,7 +65,7 @@ export async function loadWorldFromDatabase(cuid: string): Promise<APIWorld> {
     mountains,
 
     worldDocument,
-  }
+  };
 }
 
 /**
@@ -113,7 +119,7 @@ function loadWorldDocument(documents: Selectable<Document>[]): WorldDocument {
 function findWorldDocument(documents: Document[]): Document {
   const worldDocumentRow = documents.find(document => document.name === "world");
   if (worldDocumentRow === undefined) {
-    throw createLoadError("World document not found for this CUID");
+    throw createLoadError("World document not found for this CUID", 404);
   }
   return worldDocumentRow;
 }
@@ -143,6 +149,6 @@ function constructMountainWithIdReferences(row: MountainRow): APIMountain {
   };
 }
 
-function createLoadError(message: string): Error {
-  return new Error("An error occurred while loading the world: " + message);
+function createLoadError(message: string, statusCode: number = 500): ServerError {
+  return new ServerError("An error occurred while loading the world: " + message, statusCode);
 }

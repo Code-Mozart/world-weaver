@@ -1,10 +1,18 @@
 import { loadWorldFromDatabase } from "$lib/orm/world-loader";
 import type { World as APIWorld } from "$lib/types/api/world";
 import { GroundType } from "$lib/types/ground-type";
+import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { ServerError } from "$lib/errors/server-error";
 
 export const load: PageServerLoad = async ({ params }) => {
-  const world = await loadWorldFromDatabase(params.id);
+  const world = await loadWorldFromDatabase(params.id).catch(err => {
+    if (err instanceof ServerError) {
+      error(err.statusCode, err.message);
+    } else {
+      throw err;
+    }
+  });
   addDemoObjects(world);
   return { world, cuid: params.id };
 };
