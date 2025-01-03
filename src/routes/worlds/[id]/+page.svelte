@@ -1,6 +1,7 @@
 <script lang="ts">
   import { loadWorldIntoPOJOs } from "$lib/api-mapping/world-loader";
   import WorldView from "$lib/components/world-view.svelte";
+  import WorldUserInterface from "$lib/components/world-user-interface.svelte";
   import type { PageServerData } from "./$types";
 
   // WARNING: the world will unserialize the data from JSON literals here so
@@ -8,13 +9,16 @@
   let { data }: { data: PageServerData } = $props();
 
   const editorWorld = loadWorldIntoPOJOs(data.cuid, data.world);
+
+  let worldView = $state() as WorldView;
 </script>
 
 <svelte:head>
   <title>Home</title>
 </svelte:head>
 
-<WorldView world={editorWorld} />
+<WorldView world={editorWorld} bind:this={worldView} />
+<WorldUserInterface world={editorWorld} onNavigationControlsChanged={value => worldView.setNavigationControls(value)} />
 
 <!--
 <style>

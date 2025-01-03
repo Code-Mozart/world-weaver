@@ -30,7 +30,7 @@ export class WorldView {
   }
 
   constructor(application: Application, world: World, theme: Theme) {
-    this._viewport = WorldView.createViewport(application);
+    this._viewport = this.createViewport(application);
     this.theme = theme;
 
     this.worldSpaceGraphics = new Graphics();
@@ -60,6 +60,19 @@ export class WorldView {
     this._viewport.resize(width, height);
   }
 
+  public setNavigationControls(value: "mouse" | "gesture") {
+    switch (value) {
+      case "mouse":
+        this.setMouseViewportControls();
+        break;
+      case "gesture":
+        this.setGestureViewportControls();
+        break;
+      default:
+        throw new Error(`Unknown viewport controls: ${value}`);
+    }
+  }
+
   protected updateViewportBounds() {
     const viewport = this.viewport;
 
@@ -74,8 +87,8 @@ export class WorldView {
     });
   }
 
-  protected static createViewport(application: Application): Viewport {
-    const viewport = new Viewport({
+  protected createViewport(application: Application): Viewport {
+    this._viewport = new Viewport({
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
       worldWidth: 1000,
@@ -84,23 +97,29 @@ export class WorldView {
       passiveWheel: false,
       events: application.renderer.events,
     });
-    viewport.options.disableOnContextMenu = true;
-    application.stage.addChild(viewport);
+    this._viewport.options.disableOnContextMenu = true;
+    application.stage.addChild(this._viewport);
 
-    viewport
-      .drag({ mouseButtons: "right", wheel: true })
-      .pinch()
-      .wheel({ trackpadPinch: true, wheelZoom: false })
-      .decelerate()
-      .clampZoom({
-        minWidth: 10,
-        minHeight: 10,
+    this.setGestureViewportControls();
+    this._viewport.clampZoom({
+      minWidth: 10,
+      minHeight: 10,
 
-        maxWidth: viewport.worldWidth * 2,
-        maxHeight: viewport.worldHeight * 2,
-      });
-    viewport.moveCenter(0, 0);
+      maxWidth: this._viewport.worldWidth * 2,
+      maxHeight: this._viewport.worldHeight * 2,
+    });
+    this._viewport.moveCenter(0, 0);
 
-    return viewport;
+    return this._viewport;
+  }
+
+  protected setMouseViewportControls() {
+    console.log("setMouseViewportControls");
+    this._viewport.drag({ mouseButtons: "right" }).wheel({ trackpadPinch: false, wheelZoom: true }).decelerate();
+  }
+
+  protected setGestureViewportControls() {
+    console.log("setGestureViewportControls");
+    this._viewport.drag({ pressDrag: false }).pinch().wheel({ trackpadPinch: true, wheelZoom: false }).decelerate();
   }
 }

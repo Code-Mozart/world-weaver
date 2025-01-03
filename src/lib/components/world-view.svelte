@@ -5,6 +5,13 @@
 
   let { world }: { world: World } = $props();
 
+  let worldView: {
+    resize: (width: number, height: number) => void;
+    update: (ticker: any) => void;
+    draw: () => void;
+    setNavigationControls: (value: "mouse" | "gesture") => void;
+  };
+
   onMount(async () => {
     const { Application } = await import("pixi.js");
     const { WorldView } = await import("$lib/view/world-view");
@@ -26,7 +33,7 @@
       contentDiv.appendChild(app.canvas);
 
       const theme = new StylesheetTheme(getComputedStyle(contentDiv));
-      const worldView = new WorldView(app, world, theme);
+      worldView = new WorldView(app, world, theme);
 
       window.onresize = () => {
         app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -40,6 +47,10 @@
       });
     }
   });
+
+  export function setNavigationControls(value: "mouse" | "gesture") {
+    worldView.setNavigationControls(value);
+  }
 </script>
 
 <div id="content-div" class="content world-view-theme"></div>
