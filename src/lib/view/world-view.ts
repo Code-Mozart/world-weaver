@@ -8,6 +8,8 @@ import type { Theme } from "$lib/view/themes/theme";
 import type { EditorWorld } from "$lib/controllers/editor-world";
 import type { SetCursorIcon } from "$lib/types/cursor-style";
 import type { SetMode } from "$lib/types/editor/mode";
+import { preferences } from "$lib/store";
+import { get } from "svelte/store";
 
 /**
  * This class is the top level view for drawing the world. It manages
@@ -117,7 +119,7 @@ export class WorldView {
     this._viewport.options.disableOnContextMenu = true;
     application.stage.addChild(this._viewport);
 
-    this.setGestureViewportControls();
+    this.setNavigationControls(get(preferences).navigationControls);
     this._viewport.clampZoom({
       minWidth: 10,
       minHeight: 10,

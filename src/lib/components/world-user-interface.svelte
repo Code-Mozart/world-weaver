@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { EditorWorld } from "$lib/controllers/editor-world";
+  import { preferences } from "$lib/store";
   import type { Mode } from "$lib/types/editor/mode";
-  import { onMount } from "svelte";
 
   let {
     world,
@@ -22,21 +22,15 @@
     if (!["mouse", "gesture"].includes(value)) {
       throw new Error(`Invalid navigation control value: ${value}`);
     }
-    onNavigationControlsChanged?.(value as "mouse" | "gesture");
+    const typesValue = value as "mouse" | "gesture";
+    preferences.update(old => ({
+      ...old,
+      navigationControls: typesValue,
+    }));
+    onNavigationControlsChanged?.(typesValue);
   }
 
-  onMount(() => {
-    document.onvisibilitychange = () => {
-      if (document.hidden) return;
-
-      const naviationControlsElement = document.getElementById("navigation-controls");
-      if (naviationControlsElement) {
-        const checkedElement = naviationControlsElement.querySelector("input:checked");
-        const value = (checkedElement as HTMLInputElement | null)?.value;
-        setNavigationControls(value);
-      }
-    };
-  });
+  let navigationControl = $preferences.navigationControls;
 </script>
 
 <div class="world-ui">
@@ -49,7 +43,14 @@
       <p>Navigation Controls</p>
 
       <div class="toggle-group" id="navigation-controls">
-        <input type="radio" name="default" id="mouse-controls" value="mouse" oninput={handleNavigationControlSetting} />
+        <input
+          type="radio"
+          name="default"
+          id="mouse-controls"
+          value="mouse"
+          oninput={handleNavigationControlSetting}
+          checked={navigationControl === "mouse"}
+        />
         <label for="mouse-controls">Mouse Controls</label>
 
         <input
@@ -58,7 +59,7 @@
           id="gesture-controls"
           value="gesture"
           oninput={handleNavigationControlSetting}
-          checked
+          checked={navigationControl === "gesture"}
         />
         <label for="gesture-controls">Gesture Controls</label>
       </div>
