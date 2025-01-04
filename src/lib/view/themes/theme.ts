@@ -26,6 +26,7 @@ export namespace Theme {
 
   export interface Point {
     radius: number;
+    selectedFillColor: ColorSource;
   }
 
   export interface Coastline {

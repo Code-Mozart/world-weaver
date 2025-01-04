@@ -1,6 +1,6 @@
 import type { WorldDocument } from "$lib/types/documents/world-document";
-import type { Coastline, Mountain, River, World } from "$lib/types/world";
-import type { GeometryRegistry } from "./geometry-registry";
+import type { Coastline, Geometry, Mountain, River, World } from "$lib/types/world";
+import type { GeometryRegistry } from "$lib/controllers/geometry-registry";
 
 export class EditorWorld implements World {
   cuid: string;
@@ -27,5 +27,29 @@ export class EditorWorld implements World {
     this.mountains = mountains;
 
     this.geometryRegistry = geometryRegistry;
+  }
+
+  public isInvisible(geometry: Geometry): boolean {
+    return this.geometryRegistry.isInvisible(geometry);
+  }
+
+  public isSelected(geometry: Geometry): boolean {
+    return this.geometryRegistry.isSelected(geometry);
+  }
+
+  get selectionCount(): number {
+    return this.geometryRegistry.selectionCount;
+  }
+
+  get selection(): Geometry[] {
+    return this.geometryRegistry.selection;
+  }
+
+  public setSelection(geometry: Geometry[]) {
+    this.geometryRegistry.setSelection(geometry);
+  }
+
+  public getGeometryInBox(startX: number, startY: number, endX: number, endY: number): Geometry[] {
+    return this.geometryRegistry.getInBox(startX, startY, endX, endY);
   }
 }

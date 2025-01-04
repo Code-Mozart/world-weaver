@@ -28,6 +28,7 @@ export class StylesheetTheme implements Theme {
     };
     this.point = {
       radius: getNumber("--point-radius", this.style),
+      selectedFillColor: getColorSource("--point-selected-fill-color", this.style),
     };
     this.coastline = {
       outline: {
@@ -65,6 +66,7 @@ export class StylesheetTheme implements Theme {
     };
     this.point = {
       radius: getNumber("--point-radius", this.style),
+      selectedFillColor: getColorSource("--point-selected-fill-color", this.style),
     };
     this.coastline = {
       outline: {

@@ -1,9 +1,10 @@
 <script lang="ts">
-  import type { World } from "$lib/types/world";
+  import type { EditorWorld } from "$lib/controllers/editor-world";
+  import type { CursorStyle } from "$lib/types/cursor-style";
   import { StylesheetTheme } from "$lib/view/themes/stylesheet-theme";
   import { onMount } from "svelte";
 
-  let { world }: { world: World } = $props();
+  let { world }: { world: EditorWorld } = $props();
 
   let worldView: {
     resize: (width: number, height: number) => void;
@@ -32,8 +33,12 @@
       contentDiv.onwheel = event => event.preventDefault();
       contentDiv.appendChild(app.canvas);
 
+      const onSetCursorIcon = (cursor: CursorStyle) => {
+        contentDiv.style.cursor = cursor;
+      };
+
       const theme = new StylesheetTheme(getComputedStyle(contentDiv));
-      worldView = new WorldView(app, world, theme);
+      worldView = new WorldView(app, world, theme, onSetCursorIcon);
 
       window.onresize = () => {
         app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -94,6 +99,8 @@
 
       --coastline-outline-color: #111111;
 
+      --point-selected-fill-color: #111111;
+
       --cursor-color: #444444;
     }
 
@@ -110,6 +117,8 @@
       --void-fill-color: #58335a;
 
       --coastline-outline-color: #eeeeee;
+
+      --point-selected-fill-color: #eeeeee;
 
       --cursor-color: #cccccc;
     }

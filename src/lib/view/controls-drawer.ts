@@ -2,6 +2,7 @@ import { Drawing } from "$lib/drawing/drawing";
 import { Viewport } from "pixi-viewport";
 import type { Theme } from "$lib/view/themes/theme";
 import type { Rectangle } from "$lib/types/editor";
+import type { CursorStyle, SetCursorIcon } from "$lib/types/cursor-style";
 
 /**
  * This class is responsible for drawing the world.
@@ -12,6 +13,8 @@ export class ControlsDrawer {
   protected screenSpaceDrawing: Drawing;
   protected theme: Theme;
 
+  public setCursorIcon: SetCursorIcon;
+
   protected cursorPosition: { x: number; y: number; visible: boolean };
   protected selectionBox: Rectangle | null;
 
@@ -19,11 +22,19 @@ export class ControlsDrawer {
     return this._viewport;
   }
 
-  constructor(viewport: Viewport, worldSpaceDrawing: Drawing, screenSpaceDrawing: Drawing, theme: Theme) {
+  constructor(
+    viewport: Viewport,
+    worldSpaceDrawing: Drawing,
+    screenSpaceDrawing: Drawing,
+    theme: Theme,
+    onSetCursorIcon: SetCursorIcon,
+  ) {
     this._viewport = viewport;
     this.worldSpaceDrawing = worldSpaceDrawing;
     this.screenSpaceDrawing = screenSpaceDrawing;
     this.theme = theme;
+
+    this.setCursorIcon = onSetCursorIcon;
 
     this.cursorPosition = { x: 0, y: 0, visible: false };
     this.selectionBox = null;

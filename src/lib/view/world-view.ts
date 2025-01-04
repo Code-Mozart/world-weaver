@@ -4,8 +4,9 @@ import { Application, Graphics, Ticker } from "pixi.js";
 import { WorldDrawer } from "$lib/view/world-drawer";
 import { WorldControls } from "$lib/controllers/world-controls";
 import { ControlsDrawer } from "$lib/view/controls-drawer";
-import type { World } from "$lib/types/world";
 import type { Theme } from "$lib/view/themes/theme";
+import type { EditorWorld } from "$lib/controllers/editor-world";
+import type { SetCursorIcon } from "$lib/types/cursor-style";
 
 /**
  * This class is the top level view for drawing the world. It manages
@@ -29,7 +30,7 @@ export class WorldView {
     return this._viewport;
   }
 
-  constructor(application: Application, world: World, theme: Theme) {
+  constructor(application: Application, world: EditorWorld, theme: Theme, onSetCursorIcon: SetCursorIcon) {
     this._viewport = this.createViewport(application);
     this.theme = theme;
 
@@ -42,8 +43,14 @@ export class WorldView {
     this.screenSpaceDrawing = new Drawing(this.screenSpaceGraphics);
 
     this.worldDrawer = new WorldDrawer(this._viewport, this.worldSpaceDrawing, world, theme);
-    this.controlsDrawer = new ControlsDrawer(this._viewport, this.worldSpaceDrawing, this.screenSpaceDrawing, theme);
-    this.worldControls = new WorldControls(world, this.controlsDrawer, this.worldDrawer);
+    this.controlsDrawer = new ControlsDrawer(
+      this._viewport,
+      this.worldSpaceDrawing,
+      this.screenSpaceDrawing,
+      theme,
+      onSetCursorIcon,
+    );
+    this.worldControls = new WorldControls(world, this.viewport, this.controlsDrawer, this.worldDrawer);
   }
 
   public draw() {
