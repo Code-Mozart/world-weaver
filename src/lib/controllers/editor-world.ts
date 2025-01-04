@@ -1,5 +1,5 @@
 import type { WorldDocument } from "$lib/types/documents/world-document";
-import type { Coastline, Geometry, Mountain, River, World } from "$lib/types/world";
+import type { Coastline, Geometry, Mountain, Point, River, World } from "$lib/types/world";
 import type { GeometryRegistry } from "$lib/controllers/geometry-registry";
 
 export class EditorWorld implements World {
@@ -51,5 +51,9 @@ export class EditorWorld implements World {
 
   public getGeometryInBox(startX: number, startY: number, endX: number, endY: number): Geometry[] {
     return this.geometryRegistry.getInBox(startX, startY, endX, endY);
+  }
+
+  public getNearestPoint(x: number, y: number, maxDistance?: number): Point | null {
+    return this.geometryRegistry.getNearestPoint(x, y, maxDistance);
   }
 }

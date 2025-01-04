@@ -10,6 +10,8 @@ export class ViewMode extends BaseMode {
       return Mode.Select;
     } else if (this.world.selectionCount > 0 && this.moveRangeSensor.isInRange) {
       return Mode.Move;
+    } else if (this.moveRangeSensor.isInRange) {
+      return Mode.Move;
     }
   }
 }

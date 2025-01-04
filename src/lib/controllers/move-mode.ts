@@ -8,6 +8,7 @@ export class MoveMode extends BaseMode {
   public name = Mode.Move;
 
   protected isDragging = false;
+  protected isSelectAndMove = false;
   protected startPositions: Map<Point, Vector2> = new Map();
   protected delta: Vector2 = { x: 0, y: 0 };
 
@@ -34,6 +35,10 @@ export class MoveMode extends BaseMode {
   }
 
   protected startDrag() {
+    if (this.world.selectionCount === 0) {
+      this.selectNearestPoint();
+    }
+
     this.isDragging = true;
     this.startPositions = this.savePositions();
     this.updateDrag();
@@ -56,6 +61,11 @@ export class MoveMode extends BaseMode {
   }
 
   protected stopDrag() {
+    if (this.isSelectAndMove) {
+      this.isSelectAndMove = false;
+      this.world.setSelection([]);
+    }
+
     this.isDragging = false;
     // save new positions
   }
@@ -69,6 +79,12 @@ export class MoveMode extends BaseMode {
         return [geometry, { x: geometry.x, y: geometry.y }];
       }),
     );
+  }
+
+  protected selectNearestPoint() {
+    const point = this.moveRangeSensor.pointNearCursor!;
+    this.isSelectAndMove = true;
+    this.world.setSelection([point]);
   }
 
   protected createOtherGeometryError(geometry: Geometry) {

@@ -1,3 +1,4 @@
+import { VectorMath } from "$lib/math/vector-math";
 import type { Geometry, Network, Point, Polygon } from "$lib/types/world";
 
 export class GeometryRegistry {
@@ -46,6 +47,25 @@ export class GeometryRegistry {
     );
   }
 
+  public getNearestPoint(x: number, y: number, maxDistance?: number): Point | null {
+    const nearest = this.getPointsByDistance(x, y).at(0);
+    if (nearest !== undefined && maxDistance !== undefined) {
+      const maxDistanceSqr = maxDistance * maxDistance;
+      return nearest.sqrDistance <= maxDistanceSqr ? nearest.point : null;
+    }
+    return nearest?.point ?? null;
+  }
+
+  protected getPointsByDistance(queryX: number, queryY: number): SqrDistanceToPoint[] {
+    const distancesSqr = new Array<SqrDistanceToPoint>(this.points.size);
+    let i = 0;
+    for (const point of this.points) {
+      distancesSqr[i++] = { sqrDistance: VectorMath.sqrMagnitude(point.x - queryX, point.y - queryY), point };
+    }
+    distancesSqr.sort((a, b) => a.sqrDistance - b.sqrDistance);
+    return distancesSqr;
+  }
+
   public static fromMaps(
     pointsMap: Map<number, Point>,
     polygonsMap: Map<number, Polygon>,
@@ -58,4 +78,9 @@ export class GeometryRegistry {
       new Set(polygonsMap.values()),
     );
   }
+}
+
+interface SqrDistanceToPoint {
+  sqrDistance: number;
+  point: Point;
 }
