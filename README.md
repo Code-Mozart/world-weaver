@@ -48,6 +48,12 @@ npm run dev
 npm run dev -- --open
 ```
 
+### Counting lines of code
+
+```bash
+wc -l $(git ls-files | grep -e '.*\.ts' -e '.*\.svelte')
+```
+
 ## Building
 
 To create a production version of your app:
