@@ -1,11 +1,17 @@
 <script lang="ts">
   import type { EditorWorld } from "$lib/controllers/editor-world";
+  import type { Mode } from "$lib/types/editor/mode";
   import { onMount } from "svelte";
 
   let {
     world,
+    mode,
     onNavigationControlsChanged,
-  }: { world: EditorWorld; onNavigationControlsChanged?: (value: "mouse" | "gesture") => void } = $props();
+  }: {
+    world: EditorWorld;
+    mode: Mode | undefined;
+    onNavigationControlsChanged?: (value: "mouse" | "gesture") => void;
+  } = $props();
 
   function handleNavigationControlSetting(event: Event) {
     const value = (event.target as HTMLInputElement).value;
@@ -36,6 +42,7 @@
 <div class="world-ui">
   <div class="top">
     <p>Editing world '{world.worldDocument.name}'</p>
+    <p>Mode: {mode}</p>
   </div>
   <div class="bottom">
     <div class="toggle-group-container">

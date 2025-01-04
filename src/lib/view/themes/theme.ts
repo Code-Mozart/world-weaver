@@ -26,6 +26,7 @@ export namespace Theme {
 
   export interface Point {
     radius: number;
+    selectedRadius: number;
     selectedFillColor: ColorSource;
   }
 

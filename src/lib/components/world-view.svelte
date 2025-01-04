@@ -1,10 +1,11 @@
 <script lang="ts">
   import type { EditorWorld } from "$lib/controllers/editor-world";
   import type { CursorStyle } from "$lib/types/cursor-style";
+  import type { SetMode } from "$lib/types/editor/mode";
   import { StylesheetTheme } from "$lib/view/themes/stylesheet-theme";
   import { onMount } from "svelte";
 
-  let { world }: { world: EditorWorld } = $props();
+  let { world, onSetMode }: { world: EditorWorld; onSetMode?: SetMode } = $props();
 
   let worldView: {
     resize: (width: number, height: number) => void;
@@ -38,7 +39,7 @@
       };
 
       const theme = new StylesheetTheme(getComputedStyle(contentDiv));
-      worldView = new WorldView(app, world, theme, onSetCursorIcon);
+      worldView = new WorldView(app, world, theme, onSetCursorIcon, onSetMode);
 
       window.onresize = () => {
         app.renderer.resize(window.innerWidth, window.innerHeight);
@@ -79,6 +80,7 @@
 
   .world-view-theme {
     --point-radius: 5;
+    --point-selected-radius: 8;
     --coastline-outline-width: 1;
     --river-fill-color: var(--water-fill-color);
 

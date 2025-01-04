@@ -66,7 +66,7 @@ export class WorldDrawer {
 
   protected drawPoint(point: Point, strokeStyle: StrokePatternStyle, fillStyle: FillInput) {
     if (this.world.isSelected(point)) {
-      this.drawing.addFilledCircle(point.x, point.y, this.theme.point.radius / this.viewport.scaled, fillStyle);
+      this.drawing.addFilledCircle(point.x, point.y, this.theme.point.selectedRadius / this.viewport.scaled, fillStyle);
     } else {
       this.drawing.addOutlinedCircle(point.x, point.y, this.theme.point.radius / this.viewport.scaled, strokeStyle);
     }

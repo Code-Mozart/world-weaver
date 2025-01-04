@@ -7,6 +7,7 @@ import { ControlsDrawer } from "$lib/view/controls-drawer";
 import type { Theme } from "$lib/view/themes/theme";
 import type { EditorWorld } from "$lib/controllers/editor-world";
 import type { SetCursorIcon } from "$lib/types/cursor-style";
+import type { SetMode } from "$lib/types/editor/mode";
 
 /**
  * This class is the top level view for drawing the world. It manages
@@ -30,7 +31,13 @@ export class WorldView {
     return this._viewport;
   }
 
-  constructor(application: Application, world: EditorWorld, theme: Theme, onSetCursorIcon: SetCursorIcon) {
+  constructor(
+    application: Application,
+    world: EditorWorld,
+    theme: Theme,
+    onSetCursorIcon: SetCursorIcon,
+    onSetMode?: SetMode,
+  ) {
     this._viewport = this.createViewport(application);
     this.theme = theme;
 
@@ -50,7 +57,7 @@ export class WorldView {
       theme,
       onSetCursorIcon,
     );
-    this.worldControls = new WorldControls(world, this.viewport, this.controlsDrawer, this.worldDrawer);
+    this.worldControls = new WorldControls(world, this.viewport, this.controlsDrawer, this.worldDrawer, onSetMode);
   }
 
   public draw() {
