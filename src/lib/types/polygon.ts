@@ -1,3 +1,3 @@
 export interface Polygon {
-    id: number;
+  id: number;
 }
