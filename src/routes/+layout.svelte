@@ -11,7 +11,7 @@
     :global(body) {
       --background-color: #ffffff;
       --foreground-color: #111111;
-      --weak-contrast-color: rgb(236, 236, 236);
+      --weak-contrast-color: #ececec;
 
       --inverted-foreground-color: #ffffff;
       --inverted-background-color: #111111;
@@ -22,7 +22,7 @@
     :global(body) {
       --background-color: #111111;
       --foreground-color: #dddddd;
-      --weak-contrast-color: rgb(20, 20, 20);
+      --weak-contrast-color: #141414;
 
       --inverted-foreground-color: #000000;
       --inverted-background-color: #aaaaaa;

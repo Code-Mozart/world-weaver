@@ -87,9 +87,9 @@
     --cursor-radius: 5;
 
     --selection-box-border-width: 2;
-    --selection-box-border-color: var(--foreground-color);
     --selection-box-border-pattern: [2, 2];
-    --selection-box-fill-color: rgba(var(--inverted-background-color), 0.3);
+    --selection-box-border-color: #000000;
+    --selection-box-fill-color: rgba(#111111, 0.3);
   }
 
   @media (prefers-color-scheme: light) {

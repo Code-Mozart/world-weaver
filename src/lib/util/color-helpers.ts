@@ -6,9 +6,9 @@ export function resolveColor(value: string): string {
       /^rgba\(#([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2}),(?: *)((?:1)|(?:1\.0+)|(?:0?\.[0-9]+))\)$/,
     );
     if (match === null) throw new Error("Test for color regex succeeded but match failed. This is a bug!");
-    const r = parseInt(match[1], 16) / 255;
-    const g = parseInt(match[2], 16) / 255;
-    const b = parseInt(match[3], 16) / 255;
+    const r = parseInt(match[1], 16);
+    const g = parseInt(match[2], 16);
+    const b = parseInt(match[3], 16);
     const a = parseFloat(match[4]);
     return `rgba(${r},${g},${b},${a})`;
   }
