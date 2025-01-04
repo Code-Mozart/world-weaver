@@ -21,6 +21,15 @@ export function calculateBoundingBox(geometry: Geometry[]): Rectangle {
   return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 }
 
+export function growRectangle(rectangle: Rectangle, sideLength: number): Rectangle {
+  return {
+    x: rectangle.x - sideLength,
+    y: rectangle.y - sideLength,
+    width: rectangle.width + sideLength * 2,
+    height: rectangle.height + sideLength * 2,
+  };
+}
+
 export function isPointInRectangle(x: number, y: number, rectangle: Rectangle) {
   return (
     x >= rectangle.x && x <= rectangle.x + rectangle.width && y >= rectangle.y && y <= rectangle.y + rectangle.height

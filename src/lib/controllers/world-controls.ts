@@ -1,13 +1,14 @@
 import { EditorWorld } from "$lib/controllers/editor-world";
 import { VectorMath } from "$lib/math/vector-math";
-import { calculateBoundingBox, isPointInRectangle } from "$lib/util/geometry-helpers";
+import { calculateBoundingBox, growRectangle, isPointInRectangle } from "$lib/util/geometry-helpers";
 import type { ControlsDrawer } from "$lib/view/controls-drawer";
 import type { WorldDrawer } from "$lib/view/world-drawer";
 import type { Viewport } from "pixi-viewport";
 import type { Ticker } from "pixi.js";
 
 // in pixels in screen distance
-const SINGLE_SELECTION_MIN_SQR_RADIUS = 25 * 25;
+const SINGLE_SELECTION_MIN_RADIUS = 25;
+const SINGLE_SELECTION_MIN_SQR_RADIUS = SINGLE_SELECTION_MIN_RADIUS * SINGLE_SELECTION_MIN_RADIUS;
 
 export class WorldControls {
   protected world: EditorWorld;
@@ -70,6 +71,10 @@ export class WorldControls {
     if (!inMoveRange && this.mouse.drag.start !== null && this.mouse.drag.mode !== "move") {
       this.mouse.drag.mode = "select";
       this.updateSelectionBox();
+    }
+
+    if (this.mouse.drag.start === null) {
+      this.mouse.drag.mode = null;
     }
   }
 
@@ -158,7 +163,7 @@ export class WorldControls {
 
   protected isCursorInRangeOfMultipleSelected(): boolean {
     const geometry = this.world.selection;
-    const boundingBox = calculateBoundingBox(geometry);
+    const boundingBox = growRectangle(calculateBoundingBox(geometry), SINGLE_SELECTION_MIN_RADIUS);
     return isPointInRectangle(this.mouse.world.x, this.mouse.world.y, boundingBox);
   }
 
