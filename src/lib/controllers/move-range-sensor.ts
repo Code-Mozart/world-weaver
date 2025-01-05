@@ -1,9 +1,9 @@
 import type { Viewport } from "pixi-viewport";
 import { VectorMath } from "$lib/math/vector-math";
 import { calculateBoundingBox, growRectangle, isPointInRectangle } from "$lib/util/geometry-helpers";
-import type { EditorWorld } from "$lib/controllers/editor-world";
 import type { Mouse } from "$lib/types/editor/mouse-data";
 import type { Point } from "$lib/types/world";
+import type { EditorWorld } from "$lib/types/editor/world";
 
 // in pixels in screen distance
 const SINGLE_SELECTION_MIN_RADIUS = 25;

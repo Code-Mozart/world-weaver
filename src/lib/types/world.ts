@@ -3,12 +3,14 @@ import type { GroundType } from "./ground-type";
 
 // Abstract Types
 
-// defines any point on the map
-// this way a coastline vertex and a river mouth can share the same point for example
-export interface Point {
+export interface Record {
   id: number;
   temporaryCuid: string | null;
+}
 
+// defines any point on the map
+// this way a coastline vertex and a river mouth can share the same point for example
+export interface Point extends Record {
   x: number;
   y: number;
 }
@@ -24,10 +26,7 @@ export interface Polygon {
 
 export namespace Network {
   // defines a single node in a network
-  export interface Node {
-    id: number;
-    temporaryCuid: string | null;
-
+  export interface Node extends Record {
     point: Point;
     nextNodes: Network.Node[];
   }
@@ -35,19 +34,13 @@ export namespace Network {
 
 // defines any network (e.g path) on the map
 // networks must always be fully connected (single component)
-export interface Network {
-  id: number;
-  temporaryCuid: string | null;
-
+export interface Network extends Record {
   nodes: Network.Node[];
 }
 
 // World Object Type
 
-export interface Coastline {
-  id: number;
-  temporaryCuid: string | null;
-
+export interface Coastline extends Record {
   shape: Polygon;
   groundType: GroundType;
 
@@ -55,20 +48,14 @@ export interface Coastline {
   name: string | null;
 }
 
-export interface River {
-  id: number;
-  temporaryCuid: string | null;
-
+export interface River extends Record {
   path: Network;
 
   // user information
   name: string | null;
 }
 
-export interface Mountain {
-  id: number;
-  temporaryCuid: string | null;
-
+export interface Mountain extends Record {
   path: Network;
 
   // user information

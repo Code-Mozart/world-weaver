@@ -1,6 +1,6 @@
 import type { Ticker } from "pixi.js";
 import type { Viewport } from "pixi-viewport";
-import type { EditorWorld } from "$lib/controllers/editor-world";
+import type { EditorWorld } from "$lib/types/editor/world";
 import type { ControlsDrawer } from "$lib/view/controls-drawer";
 import type { WorldDrawer } from "$lib/view/world-drawer";
 import { Mode as ModeName } from "$lib/types/editor/mode";

@@ -1,8 +1,9 @@
 import { Drawing } from "$lib/drawing/drawing";
 import { Viewport } from "pixi-viewport";
 import type { Theme } from "$lib/view/themes/theme";
-import type { Rectangle } from "$lib/types/editor";
-import type { CursorStyle, SetCursorIcon } from "$lib/types/cursor-style";
+import type { Rectangle } from "$lib/types/math/rectangle";
+import type { GetHTMLElement } from "$lib/types/get-html-element";
+import type { CursorStyle } from "$lib/types/cursor-style";
 
 /**
  * This class is responsible for drawing the world.
@@ -13,7 +14,7 @@ export class ControlsDrawer {
   protected screenSpaceDrawing: Drawing;
   protected theme: Theme;
 
-  public setCursorIcon: SetCursorIcon;
+  protected getHTMLElement: GetHTMLElement;
 
   protected cursorPosition: { x: number; y: number; visible: boolean };
   protected selectionBox: Rectangle | null;
@@ -27,14 +28,14 @@ export class ControlsDrawer {
     worldSpaceDrawing: Drawing,
     screenSpaceDrawing: Drawing,
     theme: Theme,
-    onSetCursorIcon: SetCursorIcon,
+    onGetHTMLElement: GetHTMLElement,
   ) {
     this._viewport = viewport;
     this.worldSpaceDrawing = worldSpaceDrawing;
     this.screenSpaceDrawing = screenSpaceDrawing;
     this.theme = theme;
 
-    this.setCursorIcon = onSetCursorIcon;
+    this.getHTMLElement = onGetHTMLElement;
 
     this.cursorPosition = { x: 0, y: 0, visible: false };
     this.selectionBox = null;
@@ -85,5 +86,9 @@ export class ControlsDrawer {
 
   public setSelectionBox(rectangle: Rectangle | null) {
     this.selectionBox = rectangle;
+  }
+
+  public setCursorIcon(cursorStyle: CursorStyle) {
+    this.getHTMLElement().style.cursor = cursorStyle;
   }
 }

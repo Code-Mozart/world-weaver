@@ -1,15 +1,16 @@
-import { EditorWorld } from "$lib/controllers/editor-world";
+import type { EditorWorld } from "$lib/types/editor/world";
 import { Mode as ModeName, type SetMode } from "$lib/types/editor/mode";
 import type { Mouse } from "$lib/types/editor/mouse-data";
 import type { ControlsDrawer } from "$lib/view/controls-drawer";
 import type { WorldDrawer } from "$lib/view/world-drawer";
 import type { Viewport } from "pixi-viewport";
-import type { Ticker } from "pixi.js";
 import type { Mode } from "$lib/controllers/mode";
 import { ViewMode } from "$lib/controllers/view-mode";
 import { SelectMode } from "$lib/controllers/select-mode";
 import { MoveMode } from "$lib/controllers/move-mode";
 import { MoveRangeSensor } from "./move-range-sensor";
+import type { GetHTMLElement } from "$lib/types/get-html-element";
+import type { Ticker } from "pixi.js";
 
 /**
  * This class manages the world controls and is implemented as a state machine.
@@ -20,6 +21,7 @@ export class WorldControls {
 
   protected moveRangeSensor: MoveRangeSensor;
   protected mouse: Mouse;
+  protected world: EditorWorld;
 
   protected setMode?: SetMode;
 
@@ -32,6 +34,8 @@ export class WorldControls {
   ) {
     this.mouse = WorldControls.initializeMouse();
     this.moveRangeSensor = new MoveRangeSensor(world, viewport, this.mouse);
+    this.world = world;
+
     const dependencies = {
       world,
       viewport,
@@ -119,6 +123,20 @@ export class WorldControls {
 
       this.mouse.world = viewport.toWorld(event.globalX, event.globalY);
     };
+
+    window.onkeydown = event => this.handleKeyDown(event);
+  }
+
+  protected handleKeyDown(event: KeyboardEvent) {
+    const key = event.key;
+    const isShift = event.shiftKey;
+    const isControl = event.ctrlKey;
+
+    if (key === "z" && isControl) {
+      this.world.undo();
+    } else if ((key === "y" && isControl) || (key === "z" && isShift && isControl)) {
+      this.world.redo();
+    }
   }
 
   protected static initializeMouse(): Mouse {

@@ -5,7 +5,7 @@ import { Viewport } from "pixi-viewport";
 import type { Theme } from "$lib/view/themes/theme";
 import { GroundType } from "$lib/types/ground-type";
 import type { ColorSource, FillInput } from "pixi.js";
-import type { EditorWorld } from "$lib/controllers/editor-world";
+import type { EditorWorld } from "$lib/types/editor/world";
 import type { StrokePatternStyle } from "$lib/types/stroke-pattern-style";
 
 /**

@@ -1,4 +1,5 @@
 import { BaseMode } from "$lib/controllers/mode";
+import { setPointPositions } from "$lib/deltas/set-point-positions";
 import { Mode } from "$lib/types/editor/mode";
 import type { Vector2 } from "$lib/types/math/vector2";
 import type { Geometry, Point } from "$lib/types/world";
@@ -40,7 +41,7 @@ export class MoveMode extends BaseMode {
     }
 
     this.isDragging = true;
-    this.startPositions = this.savePositions();
+    this.startPositions = this.getCurrentPositions();
     this.updateDrag();
   }
 
@@ -67,10 +68,17 @@ export class MoveMode extends BaseMode {
     }
 
     this.isDragging = false;
-    // save new positions
+    const positionData = [
+      ...this.startPositions.entries().map(([point, startPosition]) => ({
+        point,
+        oldPosition: startPosition,
+        newPosition: { x: startPosition.x + this.delta.x, y: startPosition.y + this.delta.y },
+      })),
+    ];
+    this.world.commitChange(setPointPositions(positionData));
   }
 
-  protected savePositions(): Map<Point, Vector2> {
+  protected getCurrentPositions(): Map<Point, Vector2> {
     return new Map(
       this.world.selection.map(geometry => {
         if (!("x" in geometry && "y" in geometry)) {

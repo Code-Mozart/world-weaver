@@ -56,6 +56,15 @@ export class GeometryRegistry {
     return nearest?.point ?? null;
   }
 
+  public findPoint(predicate: (point: Point) => boolean): Point | null {
+    for (const point of this.points) {
+      if (predicate(point)) {
+        return point;
+      }
+    }
+    return null;
+  }
+
   protected getPointsByDistance(queryX: number, queryY: number): SqrDistanceToPoint[] {
     const distancesSqr = new Array<SqrDistanceToPoint>(this.points.size);
     let i = 0;

@@ -284,7 +284,7 @@ components:
             - $ref: '#/components/schemas/World.Mountains.DELETE'
             - $ref: '#/components/schemas/World.Mountains.name.SET'
 
-            - $ref: '#/components/schemas/World.Points.position.SET'
+            - $ref: '#/components/schemas/World.Points.positions.SET'
 
             - $ref: '#/components/schemas/World.Polygons.points.INSERT'
             - $ref: '#/components/schemas/World.Polygons.points.REMOVE'
@@ -316,7 +316,7 @@ components:
         - World.Mountains.DELETE
         - World.Mountains.name.SET
 
-        - World.Points.position.SET
+        - World.Points.positions.SET
 
         - World.Polygons.points.INSERT
         - World.Polygons.points.REMOVE
@@ -469,10 +469,10 @@ components:
         - name
         - path
     World.Mountains.DELETE:
+      description: |
+        Deletes a mountain. May also delete the network and its points when they
+        are no longer referenced by any other object.
       allOf:
-        - description: |
-            Deletes a mountain. May also delete the network and its points when they
-            are no longer referenced by any other object.
         - $ref: '#/components/schemas/IdOrTemporaryCUID'
     World.Mountains.name.SET:
       description: Sets or clears the name of a mountain.
@@ -483,11 +483,13 @@ components:
           nullable: true
       required:
         - name
-    World.Points.position.SET:
-      allOf:
-        - description: Sets the position of a point. The point must already exist.
-        - $ref: '#/components/schemas/IdOrTemporaryCUID'
-        - $ref: '#/components/schemas/Position'
+    World.Points.positions.SET:
+      description: Sets the position of a point. The point must already exist.
+      type: array
+      items:
+        allOf:
+          - $ref: '#/components/schemas/IdOrTemporaryCUID'
+          - $ref: '#/components/schemas/Position'
     World.Polygons.points.INSERT:
       description: |
         Inserts a new point into a polygon given the index into the polygons points array.

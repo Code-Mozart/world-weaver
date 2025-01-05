@@ -34,12 +34,10 @@
       contentDiv.onwheel = event => event.preventDefault();
       contentDiv.appendChild(app.canvas);
 
-      const onSetCursorIcon = (cursor: CursorStyle) => {
-        contentDiv.style.cursor = cursor;
-      };
+      const onGetHTMLElement = () => contentDiv;
 
       const theme = new StylesheetTheme(getComputedStyle(contentDiv));
-      worldView = new WorldView(app, world, theme, onSetCursorIcon, onSetMode);
+      worldView = new WorldView(app, world, theme, onGetHTMLElement, onSetMode);
 
       window.onresize = () => {
         app.renderer.resize(window.innerWidth, window.innerHeight);

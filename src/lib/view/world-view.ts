@@ -6,10 +6,10 @@ import { WorldControls } from "$lib/controllers/world-controls";
 import { ControlsDrawer } from "$lib/view/controls-drawer";
 import type { Theme } from "$lib/view/themes/theme";
 import type { EditorWorld } from "$lib/controllers/editor-world";
-import type { SetCursorIcon } from "$lib/types/cursor-style";
 import type { SetMode } from "$lib/types/editor/mode";
 import { preferences } from "$lib/store";
 import { get } from "svelte/store";
+import type { GetHTMLElement } from "$lib/types/get-html-element";
 
 /**
  * This class is the top level view for drawing the world. It manages
@@ -37,7 +37,7 @@ export class WorldView {
     application: Application,
     world: EditorWorld,
     theme: Theme,
-    onSetCursorIcon: SetCursorIcon,
+    onGetHTMLElement: GetHTMLElement,
     onSetMode?: SetMode,
   ) {
     this._viewport = this.createViewport(application);
@@ -57,7 +57,7 @@ export class WorldView {
       this.worldSpaceDrawing,
       this.screenSpaceDrawing,
       theme,
-      onSetCursorIcon,
+      onGetHTMLElement,
     );
     this.worldControls = new WorldControls(world, this.viewport, this.controlsDrawer, this.worldDrawer, onSetMode);
   }
