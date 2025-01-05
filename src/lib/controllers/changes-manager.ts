@@ -37,7 +37,6 @@ export class ChangesManager {
 
     if (!this.isCurrentApplied) {
       if (this.previous === null) {
-        console.log("No previous change to undo");
         return false;
       }
       this.current = this.previous;
@@ -53,7 +52,6 @@ export class ChangesManager {
 
     if (this.isCurrentApplied) {
       if (this.next === null) {
-        console.log("No next change to redo");
         return false;
       }
       this.current = this.next;
@@ -64,10 +62,6 @@ export class ChangesManager {
 
   protected undoCurrent() {
     const change = this.current!.value;
-
-    // temp
-    console.log(`Undoing change, change and change list are`, change, this.changes);
-
     if (change.undo(this.world)) {
       this.isCurrentApplied = false;
       return true;
@@ -77,10 +71,6 @@ export class ChangesManager {
 
   protected redoCurrent() {
     const change = this.current!.value;
-
-    // temp
-    console.log(`Redoing change, change and change list are`, change, this.changes);
-
     if (change.redo(this.world)) {
       this.isCurrentApplied = true;
       return true;

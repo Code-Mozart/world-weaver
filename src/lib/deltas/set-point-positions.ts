@@ -41,6 +41,5 @@ export function setPointPositions(arg: { point: Point; oldPosition: Vector2; new
     base,
     arg.map(({ point, oldPosition }) => ({ x: oldPosition.x, y: oldPosition.y, ...getIdentifier(point) })),
   );
-  console.log("Created set position change", forward, backward);
   return new Change(forward, backward);
 }
