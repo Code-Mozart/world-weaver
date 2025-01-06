@@ -17,6 +17,53 @@ export class DoublyLinkedList<T> {
     }
   }
 
+  public remove(node: DoublyLinkedList.Node<T>) {
+    // assert that node is in this list
+    if (!this.hasNode(node)) {
+      throw new Error("Node does not exist in this list");
+    }
+
+    if (node === this.head) {
+      this.popHead();
+    } else if (node === this.tail) {
+      this.popTail();
+    } else {
+      node.remove();
+    }
+  }
+
+  public popHead() {
+    if (this.head === null) {
+      return;
+    }
+
+    const newHead = this.head.next;
+    if (newHead === null) {
+      this.head = null;
+      this.tail = null;
+      return;
+    }
+
+    newHead.previous = null;
+    this.head = newHead;
+  }
+
+  public popTail() {
+    if (this.tail === null) {
+      return;
+    }
+
+    const newTail = this.tail.previous;
+    if (newTail === null) {
+      this.head = null;
+      this.tail = null;
+      return;
+    }
+
+    newTail.next = null;
+    this.tail = newTail;
+  }
+
   public removeAfter(node: DoublyLinkedList.Node<T>) {
     // assert that node is in this list
     if (!this.hasNode(node)) {
@@ -93,6 +140,13 @@ export namespace DoublyLinkedList {
     }
 
     public remove() {
+      if (this.previous === null) {
+        throw new Error("Head must be removed on the linked list itself!");
+      }
+      if (this.next === null) {
+        throw new Error("Tail must be removed on the linked list itself!");
+      }
+
       const previous = this.previous;
       const next = this.next;
       if (previous !== null) {

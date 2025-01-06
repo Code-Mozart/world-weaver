@@ -21,10 +21,14 @@ export class ChangesManager {
 
   public setMostRecent(change: Change) {
     if (this.current !== null) {
-      if (!this.isCurrentApplied && this.previous !== null) {
+      if (!this.isCurrentApplied) {
+        this.changes.remove(this.current);
         this.current = this.previous;
       }
-      this.changes.removeAfter(this.current);
+
+      if (this.current !== null) {
+        this.changes.removeAfter(this.current);
+      }
     }
     this.current = this.changes.push(change);
     this.isCurrentApplied = true;
