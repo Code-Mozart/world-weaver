@@ -1,6 +1,7 @@
 import type { EditorWorld } from "$lib/types/editor/world";
 import type { Record } from "$lib/types/world";
 import { createId } from "@paralleldrive/cuid2";
+import * as SchemaBuilder from "$lib/json-schema-builder";
 
 export enum DeltaType {
   SetWorldName = "World.Documents.WorldDocument.name.SET",
@@ -64,3 +65,9 @@ export function createDelta(type: DeltaType): BaseDeltaData {
 export function getIdentifier(record: Record): AnyIdentifier {
   return record.temporaryCuid ? { temporaryCUID: record.temporaryCuid } : { id: record.id };
 }
+
+export const Schema = SchemaBuilder.object({
+  CUID: SchemaBuilder.string(),
+  createdAt: SchemaBuilder.datetime(),
+  type: SchemaBuilder.enumeration(DeltaType),
+});
