@@ -22,7 +22,7 @@ export class ChangesManager {
   public setCurrent(change: Change) {
     // 1. remove all changes that have been applied,
     // but were undone again before this change
-    this.removeUndoneChanges();
+    this.pruneUndoneChanges();
 
     // 2. push the new change
     this.push(change);
@@ -68,14 +68,14 @@ export class ChangesManager {
     return this.redoCurrent();
   }
 
-  protected removeUndoneChanges() {
+  protected pruneUndoneChanges() {
     if (this.current !== null) {
-      // TODO: if the remote is ahead, save all changes up to the current,
-      //       so that they can be safely undone on the remote
+      this.remote.beforePruning();
 
       if (!this.isCurrentApplied) {
+        const previous = this.previous;
         this.changes.list.remove(this.current);
-        this.current = this.previous;
+        this.current = previous;
       }
 
       if (this.current !== null) {

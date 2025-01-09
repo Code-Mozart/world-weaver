@@ -3,19 +3,21 @@ import type { Delta } from "$lib/deltas/delta";
 import type { ChangeManagerData } from "$lib/types/change-manager-data";
 import type { DoublyLinkedList } from "$lib/types/linked-list";
 
-const MAX_NEW_LOCAL_CHANGES = 0;
-const MAX_SECONDS_SINCE_LAST_UPLOAD = 300;
+const MAX_NEW_LOCAL_CHANGES = 3;
+const MAX_SECONDS_SINCE_LAST_UPLOAD = 3;
 
 export class RemoteChangesManager {
   protected changes: ChangeManagerData;
   protected remote: DoublyLinkedList.Node<Change> | null;
   protected remotePosition: RemotePosition;
+  protected prunedChangesDeltas: Delta[];
   protected lastUploadedAt: Date;
 
   constructor(changes: ChangeManagerData) {
     this.changes = changes;
     this.remote = null;
     this.remotePosition = RemotePosition.AtCurrent;
+    this.prunedChangesDeltas = [];
     this.lastUploadedAt = new Date(0);
   }
 
@@ -41,6 +43,78 @@ export class RemoteChangesManager {
     this.remotePosition = RemotePosition.Behind;
   }
 
+  public beforePruning() {
+    console.assert(this.changes.current !== null, "current should never be null on pruning");
+
+    switch (this.remotePosition) {
+      case RemotePosition.Behind:
+        /*
+           ...
+           applied [remote]
+           ...
+           applied [current]
+             /     \
+        pruned     new [new current]
+        ...        ...
+  
+        */
+        // => do nothing
+        break;
+      case RemotePosition.AtCurrent:
+        if (!this.changes.isCurrentApplied) {
+          /*
+
+          step 1 (this is the state at the beginning of the function)
+                      ...
+                      applied [new remote]
+                      /                \
+          undone [current, remote]     new [new current]
+          ...                          ...        
+
+          step 2
+                ...
+                applied [current, new remote]
+                      /                \
+              undone [remote]     new [new current]
+              ...                          ...
+
+          step 3
+                      ...
+                      applied [remote]
+                        /           \
+                    pruned     new [current]
+                    ...        ...
+
+          */
+          console.assert(this.remote === this.changes.current, "remote should be at current");
+          // if remote === current && current !== null then that means remote !== null
+
+          this.prunedChangesDeltas = [this.changes.current!.value.backward];
+          this.remote = this.changes.current!.previous;
+        }
+        break;
+      case RemotePosition.Ahead:
+        /*
+           ...
+           applied [current, new remote]
+             /              \
+        pruned              new [new current]
+        ...                 ...
+        pruned [remote]
+        pruned
+        ...
+  
+        */
+        console.assert(this.remote !== null, "remote should never be null because it is ahead of current");
+
+        const from = this.remote!;
+        const to = this.changes.current!.next;
+        this.prunedChangesDeltas = this.changes.list.getPrevious(from, to!).map(change => change.backward);
+        this.remote = this.changes.current;
+        break;
+    }
+  }
+
   public maybeUpload() {
     // temp: only for debug
     printChangesList(this.changes, this.remote, this.remotePosition);
@@ -49,11 +123,13 @@ export class RemoteChangesManager {
 
     // temp: only for debug
     console.log("Deltas:", deltas);
+    console.log("Deltas for pruned changes:", this.prunedChangesDeltas);
 
-    if (this.shouldUpload(deltas.length)) {
+    if (this.shouldUpload(deltas.length + this.prunedChangesDeltas.length)) {
       this.upload(deltas);
       this.remote = newRemote;
       this.remotePosition = newRemotePosition;
+      this.prunedChangesDeltas = [];
 
       // temp: only for debug
       printChangesList(this.changes, this.remote, this.remotePosition, "Changes list after upload");
@@ -87,16 +163,16 @@ export class RemoteChangesManager {
     const from = this.remote?.next ?? this.changes.list.head;
     if (from === this.changes.current && !this.changes.isCurrentApplied) {
       // ...
-      // applied  remote, newRemote
-      // undone   current
+      // applied  [remote, new remote]
+      // undone   [current]
       // ...
       return this.getDeltasResult({ deltas: [] });
     } else {
       // ...
-      // applied          remote
+      // applied          [remote]
       // ...
-      // applied          newRemote
-      // applied/undone   current
+      // applied          [new remote]
+      // applied/undone   [current]
       // ...
       const to = this.changes.isCurrentApplied ? this.changes.current : this.changes.current!.previous;
       const deltas = from === null ? [] : this.changes.list.getNext(from, to!).map(change => change.forward);
@@ -108,20 +184,20 @@ export class RemoteChangesManager {
     let to, newRemotePosition;
     if (this.changes.isCurrentApplied) {
       // ...
-      // applied    current, newRemote
+      // applied    [current, new remote]
       // undone
       // ...
-      // undone     remote
+      // undone     [remote]
       // ...
       to = this.changes.current!.next;
       newRemotePosition = RemotePosition.AtCurrent;
     } else {
       // ...
-      // applied    newRemote
-      // undone     current
+      // applied    [new remote]
+      // undone     [current]
       // undone
       // ...
-      // undone     remote
+      // undone     [remote]
       // ...
       to = this.changes.current;
       newRemotePosition = RemotePosition.Behind;
@@ -133,8 +209,8 @@ export class RemoteChangesManager {
 
   protected getDeltasAtCurrent() {
     // ...
-    // applied  newRemote
-    // undone   current, remote
+    // applied  [new remote]
+    // undone   [current, remote]
     // ...
     const delta = this.remote!.value.backward;
     return {
