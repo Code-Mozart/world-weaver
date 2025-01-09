@@ -2,7 +2,6 @@ import type { WorldDocument } from "$lib/types/documents/world-document";
 import type { Coastline, Geometry, Mountain, Point, Record, River } from "$lib/types/world";
 import type { EditorWorld as EditorWorldInterface } from "$lib/types/editor/world";
 import type { GeometryRegistry } from "$lib/controllers/geometry-registry";
-import type { Delta } from "$lib/deltas/delta";
 import { ChangesManager } from "./changes-manager";
 import type { Change } from "$lib/deltas/change";
 import type { AnyIdentifier } from "$lib/deltas/base-delta";

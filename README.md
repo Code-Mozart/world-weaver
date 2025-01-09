@@ -2,7 +2,7 @@
 
 Weave your own worlds – A vector based map editor for creating 2D fantasy maps/worlds.
 
-## Developing
+## Development
 
 ### Roadmap and current development
 
@@ -52,6 +52,16 @@ npm run dev -- --open
 
 ```bash
 wc -l $(git ls-files | grep -e '.*\.ts' -e '.*\.svelte')
+```
+
+### Testing
+
+This project uses (Vitest)[https://vitest.dev/] as a testing frameworks. At the moment test are only written for bug-prone and complicated parts of the code. Feel free to add more.
+
+To run tests, run
+
+```bash
+npm run test
 ```
 
 ## Building

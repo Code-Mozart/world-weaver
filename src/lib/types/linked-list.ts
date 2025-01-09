@@ -87,6 +87,11 @@ export class DoublyLinkedList<T> {
     this._tail = node;
   }
 
+  public clear() {
+    this._head = null;
+    this._tail = null;
+  }
+
   /**
    * Gets all values between `from` and `to` (inclusive) iterating towards the end of the list.
    * @param to - inclusive, defaults to the end
@@ -135,6 +140,10 @@ export class DoublyLinkedList<T> {
 
   public get tail() {
     return this._tail;
+  }
+
+  public get isEmpty() {
+    return this._head === null;
   }
 
   protected getValuesBetween(from: Node<T>, to: Node<T>, getFollowing: (node: Node<T>) => Node<T> | null) {
