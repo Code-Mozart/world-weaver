@@ -1,31 +1,30 @@
+type Node<T> = DoublyLinkedList.Node<T>;
+
 export class DoublyLinkedList<T> {
-  protected head: DoublyLinkedList.Node<T> | null;
-  protected tail: DoublyLinkedList.Node<T> | null;
+  protected _head: Node<T> | null;
+  protected _tail: Node<T> | null;
 
   constructor() {
-    this.head = null;
-    this.tail = null;
+    this._head = null;
+    this._tail = null;
   }
 
-  public push(value: T): DoublyLinkedList.Node<T> {
-    if (this.head === null) {
-      this.head = new DoublyLinkedList.Node(value);
-      this.tail = this.head;
-      return this.head;
+  public push(value: T): Node<T> {
+    if (this._head === null) {
+      this._head = new DoublyLinkedList.Node(value);
+      this._tail = this._head;
+      return this._head;
     } else {
-      return this.tail!.insertAfter(value);
+      return this.insertAfter(this._tail!, value);
     }
   }
 
-  public remove(node: DoublyLinkedList.Node<T>) {
-    // assert that node is in this list
-    if (!this.hasNode(node)) {
-      throw new Error("Node does not exist in this list");
-    }
+  public remove(node: Node<T>) {
+    console.assert(this.hasNode(node), "Node does not exist in this list");
 
-    if (node === this.head) {
+    if (node === this._head) {
       this.popHead();
-    } else if (node === this.tail) {
+    } else if (node === this._tail) {
       this.popTail();
     } else {
       node.remove();
@@ -33,52 +32,91 @@ export class DoublyLinkedList<T> {
   }
 
   public popHead() {
-    if (this.head === null) {
+    if (this._head === null) {
       return;
     }
 
-    const newHead = this.head.next;
+    const newHead = this._head.next;
     if (newHead === null) {
-      this.head = null;
-      this.tail = null;
+      this._head = null;
+      this._tail = null;
       return;
     }
 
     newHead.previous = null;
-    this.head = newHead;
+    this._head = newHead;
   }
 
   public popTail() {
-    if (this.tail === null) {
+    if (this._tail === null) {
       return;
     }
 
-    const newTail = this.tail.previous;
+    const newTail = this._tail.previous;
     if (newTail === null) {
-      this.head = null;
-      this.tail = null;
+      this._head = null;
+      this._tail = null;
       return;
     }
 
     newTail.next = null;
-    this.tail = newTail;
+    this._tail = newTail;
   }
 
-  public removeAfter(node: DoublyLinkedList.Node<T>) {
-    // assert that node is in this list
-    if (!this.hasNode(node)) {
-      throw new Error("Node does not exist in this list");
+  public insertAfter(node: Node<T>, value: T): Node<T> {
+    console.assert(this.hasNode(node), "Node does not exist in this list");
+
+    if (node !== this._tail) {
+      return node.insertAfter(value);
+    } else {
+      const newNode = new DoublyLinkedList.Node(value);
+      node.next = newNode;
+      newNode.previous = node;
+      this._tail = newNode;
+      return newNode;
     }
+  }
+
+  public removeAfter(node: Node<T>) {
+    console.assert(this.hasNode(node), "Node does not exist in this list");
 
     if (node.next !== null) {
-      node.next.remove();
+      this.remove(node.next);
       node.next = null;
     }
-    this.tail = node;
+    this._tail = node;
+  }
+
+  /**
+   * Gets all values between `from` and `to` (inclusive) iterating towards the end of the list.
+   * @param to - inclusive, defaults to the end
+   */
+  public getNext(from: Node<T>, to?: Node<T>) {
+    if (this.tail === null) {
+      throw new Error("List is empty");
+    }
+
+    console.assert(this.hasNode(from), "Node does not exist in this list");
+
+    return this.getValuesBetween(from, to ?? this.tail, node => node.next);
+  }
+
+  /**
+   * Gets all values between `from` and `to` (inclusive) iterating towards the start of the list.
+   * @param to - inclusive, defaults to the start
+   */
+  public getPrevious(from: Node<T>, to?: Node<T>) {
+    if (this.head === null) {
+      throw new Error("List is empty");
+    }
+
+    console.assert(this.hasNode(from), "Node does not exist in this list");
+
+    return this.getValuesBetween(from, to ?? this.head, node => node.previous);
   }
 
   public [Symbol.iterator](): Iterator<T> {
-    let current = this.head;
+    let current = this._head;
     return {
       next: () => {
         if (current === null) {
@@ -91,12 +129,39 @@ export class DoublyLinkedList<T> {
     };
   }
 
-  protected hasNode(node: DoublyLinkedList.Node<T>): boolean {
+  public get head() {
+    return this._head;
+  }
+
+  public get tail() {
+    return this._tail;
+  }
+
+  protected getValuesBetween(from: Node<T>, to: Node<T>, getFollowing: (node: Node<T>) => Node<T> | null) {
+    if (from === to) {
+      return [from.value];
+    }
+
+    const values = [];
+
+    let node: Node<T> | null = from;
+    do {
+      if (node === null) {
+        throw new Error(`Node from and to do not form a linked list because they are not connected`);
+      }
+      values.push(node.value);
+      node = getFollowing(node);
+    } while (node !== to);
+    values.push(to.value);
+    return values;
+  }
+
+  protected hasNode(node: Node<T>): boolean {
     return this.find(n => n === node) !== null;
   }
 
-  protected find(predicate: (value: DoublyLinkedList.Node<T>) => boolean): DoublyLinkedList.Node<T> | null {
-    for (let current = this.head; current !== null; current = current.next) {
+  protected find(predicate: (value: Node<T>) => boolean): Node<T> | null {
+    for (let current = this._head; current !== null; current = current.next) {
       if (predicate(current)) {
         return current;
       }
@@ -128,6 +193,10 @@ export namespace DoublyLinkedList {
     }
 
     public insertAfter(value: T): DoublyLinkedList.Node<T> {
+      if (this.next === null) {
+        throw new Error("Tail must be inserted on the linked list itself!");
+      }
+
       const next = this.next;
       const newNode = new DoublyLinkedList.Node(value);
       this.next = newNode;

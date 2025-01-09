@@ -37,7 +37,7 @@ export class EditorWorld implements EditorWorldInterface {
   }
 
   public commitChange(change: Change) {
-    this.changesManager.setMostRecent(change);
+    this.changesManager.setCurrent(change);
   }
 
   public isInvisible(geometry: Geometry): boolean {
