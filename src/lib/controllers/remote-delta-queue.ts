@@ -1,3 +1,4 @@
+import type { Client } from "$lib/api/client";
 import type { Change } from "$lib/deltas/change";
 import type { Delta } from "$lib/deltas/delta";
 import { DoublyLinkedList } from "$lib/types/linked-list";
@@ -11,11 +12,15 @@ export class RemoteDeltaQueue {
   protected newLocalChangesCount;
   protected lastUploadedAt: Date;
 
-  constructor() {
+  protected client: Client;
+
+  constructor(client: Client) {
     this.deltas = new DoublyLinkedList<Delta>();
 
     this.newLocalChangesCount = 0;
     this.lastUploadedAt = new Date(0);
+
+    this.client = client;
   }
 
   public setCurrent(change: Change) {
@@ -68,7 +73,7 @@ export class RemoteDeltaQueue {
     this.lastUploadedAt = new Date();
     this.newLocalChangesCount = 0;
 
-    console.log("Uploading deltas:", this.deltas);
+    this.client.patchWorld([...this.deltas]);
 
     this.deltas.clear();
   }

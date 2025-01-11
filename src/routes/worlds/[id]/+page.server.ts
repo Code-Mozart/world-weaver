@@ -49,5 +49,5 @@ function addDemoPoint(world: APIWorld, x: number, y: number): number {
 }
 
 function getRandomDemoId(): number {
-  return Math.random() * 0xffffffff;
+  return Math.round(Math.random() * 0xffffffff);
 }

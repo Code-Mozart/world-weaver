@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { loadWorldIntoPOJOs } from "$lib/api-mapping/world-loader";
+  import { loadWorldIntoPOJOs } from "$lib/api/mapping/world-loader";
   import WorldView from "$lib/components/world-view.svelte";
   import WorldUserInterface from "$lib/components/world-user-interface.svelte";
   import type { PageServerData } from "./$types";

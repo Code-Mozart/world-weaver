@@ -38,15 +38,11 @@ export interface BaseDeltaData {
   type: string;
 }
 
-export abstract class BaseDelta implements BaseDeltaData {
-  CUID: string;
-  createdAt: Date;
-  type: string;
+export abstract class BaseDelta {
+  delta: BaseDeltaData;
 
   constructor(data: BaseDeltaData) {
-    this.CUID = data.CUID;
-    this.createdAt = data.createdAt;
-    this.type = data.type;
+    this.delta = data;
   }
 
   abstract apply(world: EditorWorld): void;
@@ -69,5 +65,5 @@ export function getIdentifier(record: Record): AnyIdentifier {
 export const Schema = SchemaBuilder.object({
   CUID: SchemaBuilder.string(),
   createdAt: SchemaBuilder.datetime(),
-  type: SchemaBuilder.enumeration(DeltaType),
+  type: SchemaBuilder.enumeration(Object.values(DeltaType)),
 });
