@@ -1,7 +1,7 @@
 import type { EditorWorld } from "$lib/types/editor/world";
 import type { Record } from "$lib/types/world";
 import { createId } from "@paralleldrive/cuid2";
-import * as SchemaBuilder from "$lib/json-schema-builder";
+import * as SchemaBuilder from "$lib/json-schema/json-schema-builder";
 
 export enum DeltaType {
   SetWorldName = "World.Documents.WorldDocument.name.SET",

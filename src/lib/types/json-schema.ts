@@ -1,72 +1,118 @@
-import type { JsonObject } from "$lib/types/json";
+// TYPES
 
-export interface JsonNullable {
+export type ValueSchema =
+  | CompositionSchema
+  | UnionSchema
+  | ObjectLikeSchema
+  | ArraySchema
+  | NullSchema
+  | BooleanSchema
+  | IntegerSchema
+  | NumberSchema
+  | StringSchema;
+export type ObjectLikeSchema = DictionarySchema | ObjectSchema;
+export type CompositionSchema = AllOfSchema | OneOfSchema;
+
+// Unions are not supported, use `oneOf`
+export type UnionSchema = never;
+
+// HELPER INTERFACES
+
+interface Nullable {
   nullable?: boolean;
 }
 
-export interface JsonObjectSchema extends JsonNullable {
-  type: "object";
-  properties: JsonObjectPropertiesSchema;
-  required: string[];
-  additionalProperties: boolean | JsonObject;
+interface Numeric {
+  minimum?: number;
+  maximum?: number;
+  exclusiveMinimum?: boolean;
+  exclusiveMaximum?: boolean;
+  multipleOf?: number;
 }
 
-export interface JsonArraySchema extends JsonNullable {
-  type: "array";
-  items: JsonObjectOrCompositionSchema;
+interface Const<T> {
+  const?: T;
+}
+
+interface Enum<T> {
+  enum?: T[];
+}
+
+interface SchemaType<T extends string> {
+  type: T;
+}
+
+interface Schema<T, TName extends string> extends SchemaType<TName>, Nullable, Const<T>, Enum<T> {}
+
+interface DictionaryKeyPattern extends SchemaType<"string"> {
+  pattern: string;
+}
+
+interface DictionaryKeyEnum extends SchemaType<"string">, Enum<string> {}
+
+interface ObjectType extends SchemaType<"object"> {}
+
+// SCHEMA INTERFACES
+
+export interface NullSchema extends SchemaType<"null"> {}
+export interface BooleanSchema extends Schema<boolean, "boolean"> {}
+export interface IntegerSchema extends Schema<number, "integer">, Numeric {}
+export interface NumberSchema extends Schema<number, "number">, Numeric {}
+
+export interface StringSchema extends Schema<string, "string"> {
+  minLength?: number;
+  maxLength?: number;
+  format?: string;
+  pattern?: string;
+
+  // ... other validators are not supported right now
+}
+
+export interface ArraySchema extends Nullable, SchemaType<"array"> {
+  items: ValueSchema;
   minItems?: number;
   maxItems?: number;
+  uniqueItems?: boolean;
+
+  // ... other validators are not supported right now
 }
 
-export interface JsonNullSchema {
-  type: "null";
+export interface DictionarySchema extends Nullable, ObjectType {
+  additionalProperties: true | ValueSchema;
+  propertyNames: DictionaryKeyPattern | DictionaryKeyEnum;
+  minProperties?: number;
+  maxProperties?: number;
+  patternProperties?: Record<string, ValueSchema>;
 }
 
-export interface JsonBooleanSchema extends JsonNullable {
-  type: "boolean";
-  // constrains...
+export interface ObjectSchema extends Nullable, ObjectType {
+  properties: Record<string, ValueSchema>;
+  required?: string[];
+  additionalProperties: boolean | ValueSchema;
 }
 
-export interface JsonIntegerSchema extends JsonNullable {
-  type: "integer";
-  enum?: number[];
-  // constrains...
-}
+// COMPOSITION
 
-export interface JsonNumberSchema extends JsonNullable {
-  type: "number";
-  enum?: number[];
-  // constrains...
-}
+export type ObjectCompositionSchema = ObjectSchema | OneOfObjectsSchema | AllOfObjectsSchema;
+export type AllOfSchema = AllOfObjectsSchema | AllOfAnySchema;
+export type OneOfSchema = OneOfObjectsSchema | OneOfAnySchema;
 
-export interface JsonStringSchema extends JsonNullable {
-  type: "string";
-  enum?: string[];
-  format?: string;
-  // constrains...
-}
-
-export type JsonPrimitiveSchema =
-  | JsonNullSchema
-  | JsonBooleanSchema
-  | JsonIntegerSchema
-  | JsonNumberSchema
-  | JsonStringSchema;
-
-export interface JsonObjectCompositionSchema {
+interface ObjectComposition extends ObjectType {
   unevaluatedProperties?: boolean;
 }
 
-export interface JsonAllOfSchema extends JsonObjectCompositionSchema {
-  allOf: JsonObjectOrCompositionSchema[];
+export interface AllOfObjectsSchema extends ObjectComposition {
+  allOf: ObjectSchema[];
 }
 
-export interface JsonOneOfSchema extends JsonObjectCompositionSchema {
-  oneOf: JsonObjectOrCompositionSchema[];
+export interface AllOfAnySchema {
+  allOf: ValueSchema[];
 }
 
-export type JsonObjectOrCompositionSchema = JsonObjectSchema | JsonAllOfSchema | JsonOneOfSchema;
+export interface OneOfObjectsSchema extends ObjectComposition {
+  oneOf: ObjectSchema[];
+}
 
-export type JsonObjectPropertiesSchema = { [key: string]: JsonSchemaPartial };
-
-export type JsonSchemaPartial = JsonArraySchema | JsonObjectSchema | JsonPrimitiveSchema;
+export interface OneOfAnySchema {
+  oneOf: ValueSchema[];
+}

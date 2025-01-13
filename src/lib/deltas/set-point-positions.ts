@@ -10,8 +10,8 @@ import type { EditorWorld } from "$lib/types/editor/world";
 import type { Vector2 } from "$lib/types/math/vector2";
 import type { Point } from "$lib/types/world";
 import { Change } from "$lib/deltas/change";
-import * as SchemaBuilder from "$lib/json-schema-builder";
-import { AnyIdentifierSchema, Vector2Schema } from "$lib/deltas/common-schemas";
+import * as SchemaBuilder from "$lib/json-schema/json-schema-builder";
+import { AnyIdentifierSchema, Vector2Schema, withAnyIdentifier } from "$lib/deltas/common-schemas";
 
 export type SetPointPositionsItem = Vector2 & AnyIdentifier;
 
@@ -46,4 +46,4 @@ export function setPointPositions(arg: { point: Point; oldPosition: Vector2; new
   return new Change(forward, backward);
 }
 
-export const Schema = SchemaBuilder.array(SchemaBuilder.allOf(AnyIdentifierSchema, Vector2Schema), { minItems: 1 });
+export const Schema = SchemaBuilder.array(withAnyIdentifier(Vector2Schema), { minItems: 1 });

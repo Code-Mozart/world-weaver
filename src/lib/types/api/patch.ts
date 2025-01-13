@@ -1,5 +1,5 @@
 import { Schema as DeltaSchema, type Delta } from "$lib/deltas/delta";
-import * as SchemaBuilder from "$lib/json-schema-builder";
+import * as SchemaBuilder from "$lib/json-schema/json-schema-builder";
 
 export interface RequestBody {
   author?: {
