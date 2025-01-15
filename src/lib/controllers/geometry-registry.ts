@@ -65,6 +65,10 @@ export class GeometryRegistry {
     return null;
   }
 
+  public getPolygonsIncludingPoints(points: Point[]): Polygon[] {
+    return [...this.polygons.values().filter(polygon => polygon.points.some(point => points.includes(point)))];
+  }
+
   protected getPointsByDistance(queryX: number, queryY: number): SqrDistanceToPoint[] {
     const distancesSqr = new Array<SqrDistanceToPoint>(this.points.size);
     let i = 0;

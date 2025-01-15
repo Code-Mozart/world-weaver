@@ -1,5 +1,5 @@
 import type { WorldDocument } from "$lib/types/documents/world-document";
-import type { Coastline, Geometry, Mountain, Point, Record, River } from "$lib/types/world";
+import type { Coastline, Geometry, Mountain, Point, Polygon, Record, River } from "$lib/types/world";
 import type { EditorWorld as EditorWorldInterface } from "$lib/types/editor/world";
 import type { GeometryRegistry } from "$lib/controllers/geometry-registry";
 import { ChangesManager } from "./changes-manager";
@@ -65,6 +65,10 @@ export class EditorWorld implements EditorWorldInterface {
 
   public getNearestPoint(x: number, y: number, maxDistance?: number): Point | null {
     return this.geometryRegistry.getNearestPoint(x, y, maxDistance);
+  }
+
+  public getPolygonsIncludingPoints(points: Point[]): Polygon[] {
+    return this.geometryRegistry.getPolygonsIncludingPoints(points);
   }
 
   public getPointOrThrow(identifier: AnyIdentifier): Point {

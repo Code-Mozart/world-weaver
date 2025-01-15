@@ -1,6 +1,6 @@
 import type { AnyIdentifier } from "$lib/deltas/base-delta";
 import type { Change } from "$lib/deltas/change";
-import type { Geometry, Point, World } from "$lib/types/world";
+import type { Geometry, Point, Polygon, World } from "$lib/types/world";
 
 export interface EditorWorld extends World {
   selectionCount: number;
@@ -12,6 +12,7 @@ export interface EditorWorld extends World {
   setSelection(geometry: Geometry[]): void;
   getGeometryInBox(startX: number, startY: number, endX: number, endY: number): Geometry[];
   getNearestPoint(x: number, y: number, maxDistance?: number): Point | null;
+  getPolygonsIncludingPoints(points: Point[]): Polygon[];
   getPointOrThrow(identifier: AnyIdentifier): Point;
   undo(): boolean;
   redo(): boolean;

@@ -1,6 +1,7 @@
 import { BaseMode } from "$lib/controllers/mode";
 import { setPointPositions } from "$lib/deltas/set-point-positions";
 import { Mode } from "$lib/types/editor/mode";
+import type { Line } from "$lib/types/geometry";
 import type { Vector2 } from "$lib/types/math/vector2";
 import type { Geometry, Point } from "$lib/types/world";
 import type { Ticker } from "pixi.js";
@@ -49,6 +50,31 @@ export class MoveMode extends BaseMode {
     const start = this.mouse.drag.start!.world;
     const end = this.mouse.world;
     this.delta = { x: end.x - start.x, y: end.y - start.y };
+
+    const selectedPoints = this.world.selection.filter(geometry => "x" in geometry && "y" in geometry);
+    const polygons = this.world.getPolygonsIncludingPoints(selectedPoints);
+    if (
+      polygons.some(polygon => {
+        const edges: Line[] = new Array(polygon.points.length);
+        for (let i = 0; i < polygon.points.length; i++) {
+          const from = polygon.points[i];
+          const to = polygon.points[(i + 1) % polygon.points.length];
+          edges[i] = { fromX: from.x, fromY: from.y, toX: to.x, toY: to.y };
+        }
+        return false; //areAnyIntersecting(edges);
+      })
+    ) {
+      this.world.selection.forEach(geometry => {
+        if (!("x" in geometry && "y" in geometry)) {
+          throw this.createOtherGeometryError(geometry);
+        }
+
+        const startPosition = this.startPositions.get(geometry)!;
+        geometry.x = startPosition.x;
+        geometry.y = startPosition.y;
+      });
+      return;
+    }
 
     this.world.selection.forEach(geometry => {
       if (!("x" in geometry && "y" in geometry)) {
