@@ -2,6 +2,7 @@
   import type { EditorWorld } from "$lib/controllers/editor-world";
   import { preferences } from "$lib/store";
   import type { Mode } from "$lib/types/editor/mode";
+  import { take_foo, type Foo } from "$assembly";
 
   let {
     world,
@@ -31,6 +32,9 @@
   }
 
   let navigationControl = $preferences.navigationControls;
+
+  const foo: Foo = { a: 1, b: "im a foo", c: [1, 2, 3] };
+  take_foo(foo);
 </script>
 
 <div class="world-ui">

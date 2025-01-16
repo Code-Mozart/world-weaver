@@ -35,4 +35,6 @@
   <title>Home</title>
 </svelte:head>
 
-<p id="info">This website requires scripts to be enabled! If you have them enabled, please reload the page.</p>
+<p id="info" class="info">
+  This website requires scripts to be enabled! If you have them enabled, please reload the page.
+</p>

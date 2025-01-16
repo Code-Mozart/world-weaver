@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { EditorWorld } from "$lib/controllers/editor-world";
-  import type { CursorStyle } from "$lib/types/cursor-style";
   import type { SetMode } from "$lib/types/editor/mode";
   import { StylesheetTheme } from "$lib/view/themes/stylesheet-theme";
   import { onMount } from "svelte";
 
-  let { world, onSetMode }: { world: EditorWorld; onSetMode?: SetMode } = $props();
+  let { world, onSetMode, onFullyLoaded }: { world: EditorWorld; onSetMode?: SetMode; onFullyLoaded?: () => void } =
+    $props();
 
   let worldView: {
     resize: (width: number, height: number) => void;
@@ -50,6 +50,8 @@
         worldView.draw();
       });
     }
+
+    onFullyLoaded?.();
   });
 
   export function setNavigationControls(value: "mouse" | "gesture") {

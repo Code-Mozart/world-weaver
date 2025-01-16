@@ -4,4 +4,4 @@
   import { page } from "$app/stores";
 </script>
 
-<p>{$page.status}: {$page.error?.message}</p>
+<p class="info">{$page.status}: {$page.error?.message}</p>

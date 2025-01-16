@@ -22,3 +22,8 @@ vite.config.ts.timestamp-*
 
 # Data
 db/*.sqlite
+
+
+# Added by cargo
+
+/target
