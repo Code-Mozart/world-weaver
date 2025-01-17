@@ -2,7 +2,6 @@
   import type { EditorWorld } from "$lib/controllers/editor-world";
   import { preferences } from "$lib/store";
   import type { Mode } from "$lib/types/editor/mode";
-  import { take_foo, type Foo } from "$assembly";
 
   let {
     world,

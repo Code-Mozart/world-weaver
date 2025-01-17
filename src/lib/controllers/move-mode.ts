@@ -1,3 +1,4 @@
+import type { Line } from "$assembly";
 import { BaseMode } from "$lib/controllers/mode";
 import { setPointPositions } from "$lib/deltas/set-point-positions";
 import { Mode } from "$lib/types/editor/mode";
@@ -58,7 +59,7 @@ export class MoveMode extends BaseMode {
         for (let i = 0; i < polygon.points.length; i++) {
           const from = polygon.points[i];
           const to = polygon.points[(i + 1) % polygon.points.length];
-          edges[i] = { fromX: from.x, fromY: from.y, toX: to.x, toY: to.y };
+          edges[i] = { from_x: from.x, from_y: from.y, to_x: to.x, to_y: to.y };
         }
         return false; //areAnyIntersecting(edges);
       })
