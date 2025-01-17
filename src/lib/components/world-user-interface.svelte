@@ -32,9 +32,6 @@
   }
 
   let navigationControl = $preferences.navigationControls;
-
-  const foo: Foo = { a: 1, b: "im a foo", c: [1, 2, 3] };
-  take_foo(foo);
 </script>
 
 <div class="world-ui">

@@ -1,7 +1,6 @@
 import { BaseMode } from "$lib/controllers/mode";
 import { setPointPositions } from "$lib/deltas/set-point-positions";
 import { Mode } from "$lib/types/editor/mode";
-import type { Line } from "$lib/types/geometry";
 import type { Vector2 } from "$lib/types/math/vector2";
 import type { Geometry, Point } from "$lib/types/world";
 import type { Ticker } from "pixi.js";
